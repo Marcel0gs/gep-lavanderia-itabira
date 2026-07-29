@@ -237,14 +237,29 @@ section[id] { scroll-margin-top: 84px; }
   box-shadow: 0 26px 70px rgba(0, 0, 0, calc(.55 * (1 - var(--p))));
   will-change: width, height;
 }
-/* A foto do card é quase quadrada (941x838) e o quadro muda de forma no meio
-   do caminho: no card pequeno, que é retrato, o corte é nas laterais; em tela
-   cheia, que é paisagem, o corte é em cima e embaixo. Por isso o
-   object-position precisa dos dois eixos — 30% na vertical mantém os rótulos
-   SECADORA no quadro quando abre, em vez de decepar a fileira de cima. */
+/* O quadro muda de forma no meio do caminho — retrato no card pequeno,
+   paisagem em tela cheia —, então o corte troca de eixo: primeiro come as
+   laterais, depois o topo e a base. Por isso os dois valores importam.
+   65% na horizontal segura a fileira de máquinas dentro do card pequeno (no
+   centro da foto ela ficaria pela metade); 50% na vertical porque em tela
+   cheia o assunto — máquinas e mesinha do espaço kids — está no meio. */
 .palco__midia img {
   width: 100%; height: 100%; object-fit: cover;
-  object-position: 45% 30%;
+  object-position: 65% 50%;
+  /* A foto é um plano aberto do salão inteiro. Espremida num card de ~320px
+     as máquinas viram um detalhe distante e o card não se lê. Então o card
+     pequeno mostra um recorte fechado na fileira (zoom 1,5) e o zoom vai
+     abrindo junto com ele, até revelar o salão inteiro em tela cheia — a
+     foto é a mesma, o que muda é o quanto dela cabe. A origem fica no ponto
+     das máquinas, senão o zoom fecha no lugar errado. */
+  transform: scale(calc(1.8 * (1 - var(--p)) + 1 * var(--p)));
+  transform-origin: 66% 34%;
+  will-change: transform;
+}
+/* no celular a foto já vem recortada na fileira de máquinas, então o
+   enquadramento certo é o centro dela mesmo */
+@media (max-width: 700px) {
+  .palco__midia img { object-position: 50% 50%; }
 }
 /* véu sobre o card, só enquanto o título passa por cima dele */
 .palco__midia::after {
@@ -312,6 +327,9 @@ section[id] { scroll-margin-top: 84px; }
 .palco:not(.palco--ativo) .palco__midia {
   width: 100%; height: 100%; border-radius: 0; box-shadow: none;
 }
+/* aqui o card já nasce em tela cheia, então o zoom do card pequeno — que
+   com --p parado em 0 estaria no máximo — não tem razão de existir */
+.palco:not(.palco--ativo) .palco__midia img { transform: none; }
 .palco:not(.palco--ativo) .palco__midia::after { opacity: .6; }
 .palco:not(.palco--ativo) .palco__nota { display: none; }
 .palco:not(.palco--ativo) .palco__final { opacity: 1; pointer-events: auto; }
