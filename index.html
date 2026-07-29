@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lavanderia Self Service em Itabira/MG | GeP Lavanderia</title>
-<meta name="description" content="Lave e seque sua roupa em até 60 minutos na GeP Lavanderia, self service no Centro de Itabira/MG. Ambiente climatizado, wi-fi grátis, 5,0 no Google. Aberto todos os dias, 05h às 00h.">
+<meta name="description" content="Lave e seque sua roupa em até 60 minutos na GeP Lavanderia, self service no Centro de Itabira/MG. Ambiente climatizado, wi-fi grátis e espaço kids. Aberto todos os dias, 05h às 00h.">
 <link rel="canonical" href="https://marcel0gs.github.io/gep-lavanderia-itabira/">
 <link rel="stylesheet" href="assets/css/style.css">
 
@@ -80,40 +80,106 @@
 
 <main>
 
-  <!-- ==================== HERO ==================== -->
-  <!-- Foto real do salão (assets/img/ambiente-salao.webp), cortada por
-       background-position:top pra mostrar a parede verde + fileira de
-       máquinas, sem o texto de campanha original. -->
-  <section class="hero">
-    <div class="hero__foto">
-      <img src="assets/img/ambiente-salao.webp" alt="Fileira de lavadoras e secadoras industriais da GeP Lavanderia" loading="eager">
-    </div>
-    <div class="bolha" style="width:120px;height:120px;top:12%;right:8%"></div>
-    <div class="bolha" style="width:60px;height:60px;top:60%;right:20%"></div>
-    <!-- Bolhas subindo: efeito animado, cada uma com tamanho/posição/tempo
-         próprios pra não parecer repetitivo. -->
-    <div class="bolha-sobe" style="width:14px;height:14px;left:6%;animation-delay:0s"></div>
-    <div class="bolha-sobe" style="width:22px;height:22px;left:16%;animation-delay:.5s;--deriva:-24px"></div>
-    <div class="bolha-sobe" style="width:10px;height:10px;left:29%;animation-delay:1.1s"></div>
-    <div class="bolha-sobe" style="width:30px;height:30px;left:41%;animation-delay:.2s;--deriva:26px"></div>
-    <div class="bolha-sobe" style="width:16px;height:16px;left:58%;animation-delay:1.6s;--deriva:-18px"></div>
-    <div class="bolha-sobe" style="width:24px;height:24px;left:71%;animation-delay:.8s"></div>
-    <div class="bolha-sobe" style="width:12px;height:12px;left:85%;animation-delay:2s;--deriva:20px"></div>
-    <div class="bolha-sobe" style="width:18px;height:18px;left:93%;animation-delay:.35s;--deriva:-16px"></div>
-    <div class="wrap hero__conteudo">
-      <p class="hero__olho">🫧 Self service · Centro de Itabira</p>
-      <h1 class="hero__titulo">Lave e seque sua roupa em até 60 minutos</h1>
-      <p class="hero__sub">
-        Máquinas industriais, produto de lavagem já incluso e ambiente
-        climatizado com wi-fi grátis. Chega com a roupa suja, sai com tudo
-        limpo e seco — sem depender de ninguém.
-      </p>
-      <div class="hero__acoes">
-        <a class="btn" href="https://wa.me/5531990609491?text=Ol%C3%A1%21%20Vim%20pelo%20site%20e%20gostaria%20de%20saber%20mais." target="_blank" rel="noopener">Falar no WhatsApp</a>
-        <a class="btn btn--vazado" href="#contato">Ver localização</a>
+  <!-- ==================== HERO (abre com o scroll) ==================== -->
+  <!-- Animação dirigida pelo scroll: o card central (foto real do salão)
+       começa pequeno sobre a fachada da loja e vai abrindo até ocupar a tela
+       inteira, enquanto as duas metades do título deslizam pra fora. Toda a
+       interpolação sai de UMA variável CSS (--p, de 0 a 1) que o script no
+       fim da seção atualiza a cada frame de scroll.
+
+       Sem JS, ou com "reduzir movimento" ligado, o script não adiciona a
+       classe .palco--ativo: a seção fica com altura normal de hero e mostra
+       só o estado inicial (--p = 0), que já é legível e já tem CTA na tela.
+       Nada de layout depende do script. -->
+  <section class="palco">
+    <div class="palco__trilho">
+
+      <div class="palco__fundo">
+        <img src="assets/img/hero-fundo.jpg" alt="Fachada iluminada da GeP Lavanderia Self Service, no Centro de Itabira" width="1085" height="817" fetchpriority="high">
       </div>
+
+      <!-- Bolhas subindo: elemento gráfico recorrente da marca. Ficam atrás
+           do card, então somem sozinhas quando ele abre pra tela cheia. -->
+      <div class="palco__bolhas" aria-hidden="true">
+        <div class="bolha-sobe" style="width:14px;height:14px;left:6%;animation-delay:0s"></div>
+        <div class="bolha-sobe" style="width:22px;height:22px;left:16%;animation-delay:.5s;--deriva:-24px"></div>
+        <div class="bolha-sobe" style="width:10px;height:10px;left:29%;animation-delay:1.1s"></div>
+        <div class="bolha-sobe" style="width:30px;height:30px;left:41%;animation-delay:.2s;--deriva:26px"></div>
+        <div class="bolha-sobe" style="width:16px;height:16px;left:58%;animation-delay:1.6s;--deriva:-18px"></div>
+        <div class="bolha-sobe" style="width:24px;height:24px;left:71%;animation-delay:.8s"></div>
+        <div class="bolha-sobe" style="width:12px;height:12px;left:85%;animation-delay:2s;--deriva:20px"></div>
+        <div class="bolha-sobe" style="width:18px;height:18px;left:93%;animation-delay:.35s;--deriva:-16px"></div>
+      </div>
+
+      <div class="palco__quadro">
+        <p class="palco__olho">🫧 Self service · Centro de Itabira</p>
+
+        <!-- O card que abre. Versão vertical no celular porque a horizontal,
+             cortada em tela estreita, perde a fileira de máquinas. -->
+        <picture class="palco__midia">
+          <source media="(max-width: 700px)" srcset="assets/img/hero-card-mobile.jpg">
+          <img src="assets/img/hero-card.jpg" alt="Salão da GeP Lavanderia: fileira de lavadoras e secadoras industriais, parede verde e mesa alta com cadeiras" width="1085" height="596" fetchpriority="high">
+        </picture>
+
+        <div class="palco__apoio">
+          <p class="palco__sub">
+            Máquinas industriais, produto de lavagem já incluso e ambiente
+            climatizado com wi-fi grátis e espaço kids.
+          </p>
+          <div class="palco__acoes">
+            <a class="btn" href="https://wa.me/5531990609491?text=Ol%C3%A1%21%20Vim%20pelo%20site%20e%20gostaria%20de%20saber%20mais." target="_blank" rel="noopener">Falar no WhatsApp</a>
+            <a class="btn btn--vazado" href="#contato">Ver localização</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Título por cima do card: as duas metades nascem empilhadas (lendo
+           como um H1 normal de duas linhas) e vão se afastando pros lados
+           conforme o card abre. -->
+      <h1 class="palco__titulo">
+        <span class="palco__meia palco__meia--esq">Lave e seque sua roupa</span>
+        <span class="palco__meia palco__meia--dir">em até 60 minutos</span>
+      </h1>
+
+      <!-- Só aparece no fim da animação, sobre a foto em tela cheia — pra o
+           quadro final ter pra onde levar o visitante, não morrer na foto. -->
+      <div class="palco__final">
+        <p>Aberto todos os dias, das 05h às 00h</p>
+        <a class="btn" href="https://wa.me/5531990609491?text=Ol%C3%A1%21%20Vim%20pelo%20site%20e%20gostaria%20de%20saber%20mais." target="_blank" rel="noopener">Falar no WhatsApp</a>
+      </div>
+
     </div>
   </section>
+
+  <script>
+    // Converte a posição do scroll dentro da seção num número de 0 a 1 e joga
+    // na variável --p. Todo o resto (tamanho do card, deslocamento do título,
+    // escurecimento do fundo) é interpolação em CSS a partir dela.
+    (function () {
+      var palco = document.querySelector(".palco");
+      if (!palco) return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+      palco.classList.add("palco--ativo");
+
+      var agendado = false;
+      function atualizar() {
+        agendado = false;
+        var curso = palco.offsetHeight - window.innerHeight; // scroll preso
+        var andado = -palco.getBoundingClientRect().top;
+        var p = curso > 0 ? Math.min(1, Math.max(0, andado / curso)) : 0;
+        palco.style.setProperty("--p", p.toFixed(4));
+        palco.classList.toggle("palco--fim", p > 0.78);
+      }
+      function agendar() {
+        if (!agendado) { agendado = true; requestAnimationFrame(atualizar); }
+      }
+
+      window.addEventListener("scroll", agendar, { passive: true });
+      window.addEventListener("resize", agendar);
+      atualizar();
+    })();
+  </script>
 
   <!-- ==================== LETREIRO ==================== -->
   <div class="letreiro" aria-hidden="true">
@@ -124,6 +190,7 @@
         <b>5,0 no Google</b>
         <b>Todos os dias, 05h às 00h</b>
         <b>Ambiente climatizado · Wi-fi grátis</b>
+        <b>Espaço kids</b>
       </span>
       <span class="letreiro__grupo">
         <b>Lavagem e secagem em 60 minutos</b>
@@ -131,6 +198,7 @@
         <b>5,0 no Google</b>
         <b>Todos os dias, 05h às 00h</b>
         <b>Ambiente climatizado · Wi-fi grátis</b>
+        <b>Espaço kids</b>
       </span>
     </div>
   </div>
@@ -183,6 +251,11 @@
           <svg class="dif__icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>
           <h3>Máquinas industriais</h3>
           <p>Mais potência que máquina de casa</p>
+        </div>
+        <div class="dif">
+          <svg class="dif__icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="6" r="3"/><path d="M12 9v7M8.5 12.5h7M9 21l3-5 3 5"/></svg>
+          <h3>Espaço kids</h3>
+          <p>As crianças entretidas enquanto você espera</p>
         </div>
       </div>
     </div>
@@ -272,6 +345,10 @@
           <li>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
             <span>Aberto todos os dias, das 05h às 00h</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="6" r="3"/><path d="M12 9v7M8.5 12.5h7M9 21l3-5 3 5"/></svg>
+            <span>Espaço kids pra quem vem com criança</span>
           </li>
           <li>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 12l4 4 12-12"/></svg>
