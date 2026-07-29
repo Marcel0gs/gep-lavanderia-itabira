@@ -354,30 +354,9 @@
            e usa a máquina.</p>
       </div>
 
+      <!-- Ordem do DOM = ordem do celular: primeiro os passos, depois o quadro
+           de valores. No desktop o grid joga o quadro pra coluna da direita. -->
       <div class="uso">
-        <!-- tabela de preço: o dado que todo mundo procura primeiro -->
-        <div class="tabela">
-          <h3 class="tabela__titulo">Valores</h3>
-          <div class="tabela__linha">
-            <div>
-              <strong>Lavagem</strong>
-              <span>30 minutos</span>
-            </div>
-            <b class="tabela__valor">R$ 15,90</b>
-          </div>
-          <div class="tabela__linha">
-            <div>
-              <strong>Secagem</strong>
-              <span>45 minutos</span>
-            </div>
-            <b class="tabela__valor">R$ 15,90</b>
-          </div>
-          <p class="tabela__pgto">
-            <span>Débito</span><span>Crédito</span><span>Pix</span>
-          </p>
-          <p class="tabela__nota">Produto de lavagem já incluso no valor</p>
-        </div>
-
         <ol class="passos">
           <li>Coloque suas roupas no cesto medidor</li>
           <li>Observe o número da lavadora ou secadora disponível</li>
@@ -387,6 +366,57 @@
           <li>Aguarde o tempo indicado na máquina</li>
           <li>Retire suas roupas e pronto</li>
         </ol>
+
+        <aside class="valores" aria-label="Valores e formas de pagamento">
+          <p class="valores__olho">Valores</p>
+
+          <div class="valores__item">
+            <div class="valores__info">
+              <strong>Lavagem</strong>
+              <span>30 minutos</span>
+            </div>
+            <b class="valores__preco"><small>R$</small>15,90</b>
+          </div>
+          <div class="valores__item">
+            <div class="valores__info">
+              <strong>Secagem</strong>
+              <span>45 minutos</span>
+            </div>
+            <b class="valores__preco"><small>R$</small>15,90</b>
+          </div>
+
+          <p class="valores__nota">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5 9 17.5 20 6.5"/></svg>
+            Produto de lavagem já incluso no valor
+          </p>
+
+          <!-- bandeiras desenhadas em SVG inline (nada de arquivo externo).
+               Se a loja deixar de aceitar alguma, é só remover o <li>. -->
+          <div class="pgto">
+            <p class="pgto__titulo">Pagamento no totem</p>
+            <ul class="pgto__bandeiras">
+              <li>
+                <svg viewBox="0 0 48 16" role="img" aria-label="Visa"><text x="24" y="12.6" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" font-style="italic" letter-spacing=".6" fill="#1a1f71">VISA</text></svg>
+              </li>
+              <li>
+                <svg viewBox="0 0 40 24" role="img" aria-label="Mastercard"><circle cx="15" cy="12" r="8" fill="#eb001b"/><circle cx="25" cy="12" r="8" fill="#f79e1b"/><path d="M20 5.75a8 8 0 0 1 0 12.5 8 8 0 0 1 0-12.5z" fill="#ff5f00"/></svg>
+              </li>
+              <li>
+                <svg viewBox="0 0 44 20" role="img" aria-label="Elo"><g fill="none" stroke-width="3.4" transform="rotate(-90 11 10)"><circle cx="11" cy="10" r="6" stroke="#ffcb05" stroke-dasharray="12.57 25.13"/><circle cx="11" cy="10" r="6" stroke="#ef4123" stroke-dasharray="12.57 25.13" stroke-dashoffset="-12.57"/><circle cx="11" cy="10" r="6" stroke="#00a4e0" stroke-dasharray="12.57 25.13" stroke-dashoffset="-25.13"/></g><text x="22" y="15" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="800" fill="#111">elo</text></svg>
+              </li>
+              <li>
+                <svg viewBox="0 0 40 24" role="img" aria-label="American Express"><rect width="40" height="24" rx="3" fill="#006fcf"/><text x="20" y="15.4" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="8.4" font-weight="700" letter-spacing=".4" fill="#fff">AMEX</text></svg>
+              </li>
+              <li>
+                <svg viewBox="0 0 56 20" role="img" aria-label="Hipercard"><text x="28" y="14.4" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="800" fill="#b3131b">hipercard</text></svg>
+              </li>
+              <li>
+                <svg viewBox="0 0 52 24" role="img" aria-label="Pix"><g fill="#32bcad"><path d="M6.6 6.4h6.8L10 9.8z"/><path d="M16.6 9.6v6.8l-3.4-3.4z"/><path d="M6.6 17.6h6.8L10 14.2z"/><path d="M3.4 9.6v6.8l3.4-3.4z"/></g><text x="22" y="16.4" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="800" fill="#32bcad">pix</text></svg>
+              </li>
+            </ul>
+            <p class="pgto__modos">Débito, crédito e Pix — direto na máquina</p>
+          </div>
+        </aside>
       </div>
 
       <!-- "Você sabia?" — cartaz da loja, sobre os produtos usados -->
@@ -396,8 +426,8 @@
           <h3>Você sabia?</h3>
           <p>Usamos <strong>OMO e Comfort lavanderia profissional</strong> nas
              lavagens — PH balanceado, hipoalergênico e com baixa formação de
-             espuma. A combinação de limpeza, perfume e maciez pras suas
-             roupas.</p>
+             espuma. A combinação perfeita de limpeza, perfume e maciez pras
+             suas roupas.</p>
         </div>
       </div>
     </div>
@@ -432,6 +462,11 @@
           <li>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/><path d="M8 9V4M8 4l4 2-4 2"/><circle cx="17" cy="7" r="3.2"/></svg>
             <span>Cantinho das crianças, com mesinha e cadeiras</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3.5" y="2.5" width="17" height="19" rx="2"/><path d="M14.5 2.5v19M6.5 6.5h5M6.5 10.5h5M6.5 14.5h5"/><circle cx="17.5" cy="7" r=".9" fill="currentColor" stroke="none"/><path d="M16 17.5h3"/></svg>
+            <span>Máquina de bebidas e lanches: refrigerante, energético,
+                  salgadinho e chocolate</span>
           </li>
           <li>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 12l4 4 12-12"/></svg>
