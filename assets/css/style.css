@@ -1,0 +1,319 @@
+/* ==========================================================================
+   GeP Lavanderia Self Service — folha de estilo única
+   Paleta herdada da identidade já existente no Instagram (@geplavanderia):
+   azul-marinho + verde + branco, bolhas de sabão como elemento gráfico
+   recorrente. Site deliberadamente denso em imagem, no espírito dos posts
+   do feed — diferente do Contabiliza (clean) e do WF (preto/dourado).
+   ========================================================================== */
+
+:root {
+  --azul:        #1a3a6e;
+  --azul-escuro: #102a52;
+  --azul-claro:  #e8eff9;
+  --verde:       #5cbb2a;
+  --verde-escuro:#489420;
+  --verde-claro: #eafbe0;
+  --branco:      #ffffff;
+  --cinza:       #5a6473;
+  --creme:       #f6f8fc;
+  --borda:       #dde5f2;
+  --zap:         #25d366;
+
+  --largura: 1120px;
+  --raio: 14px;
+  --sombra: 0 1px 3px rgba(16, 42, 82, .08), 0 10px 28px rgba(16, 42, 82, .10);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--branco);
+  color: var(--azul-escuro);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--azul); }
+
+h1, h2, h3 { line-height: 1.15; margin: 0 0 .75rem; letter-spacing: -.015em; color: var(--azul-escuro); }
+h1 { font-size: clamp(2.1rem, 4.8vw, 3.4rem); }
+h2 { font-size: clamp(1.6rem, 3.2vw, 2.3rem); }
+h3 { font-size: 1.15rem; }
+p  { margin: 0 0 1.15rem; }
+
+.wrap { max-width: var(--largura); margin: 0 auto; padding: 0 1.5rem; position: relative; }
+section[id] { scroll-margin-top: 84px; }
+.sr {
+  position: absolute; width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* --- bolhas decorativas (elemento de marca recorrente no feed) ----------- */
+.bolha {
+  position: absolute; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.55);
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), rgba(255,255,255,.05) 60%);
+  pointer-events: none;
+}
+.bolha--escura {
+  border-color: rgba(26,58,110,.18);
+  background: radial-gradient(circle at 30% 30%, rgba(26,58,110,.10), rgba(26,58,110,.02) 60%);
+}
+
+/* --- bolhas subindo (efeito animado) -------------------------------------- */
+/* Cada bolha define sua própria largura/posição/duração/atraso via style
+   inline (mesmo padrão das .bolha estáticas). --deriva controla o leve
+   desvio lateral, pra não subir em linha reta. */
+.bolha-sobe {
+  position: absolute; bottom: -10%;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.6);
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.4), rgba(255,255,255,.06) 65%);
+  animation-name: subir; animation-timing-function: ease-in; animation-iteration-count: infinite;
+  pointer-events: none; z-index: 1;
+  --deriva: 18px;
+}
+@keyframes subir {
+  0%   { transform: translate(0, 0) scale(.85); opacity: 0; }
+  12%  { opacity: .85; }
+  80%  { opacity: .45; }
+  100% { transform: translate(var(--deriva), -130%) scale(1.1); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bolha-sobe { animation: none; opacity: 0; }
+}
+
+/* --- letreiro (faixa animada) --------------------------------------------- */
+.letreiro { overflow: hidden; background: var(--verde-claro); border-bottom: 1px solid var(--borda); padding: .55rem 0; }
+.letreiro__trilho { display: flex; width: max-content; animation: letreiro 26s linear infinite; }
+.letreiro__grupo { display: flex; flex-shrink: 0; }
+.letreiro__grupo b {
+  font-size: .82rem; font-weight: 800; letter-spacing: .04em;
+  color: var(--verde-escuro); white-space: nowrap; text-transform: uppercase;
+  padding: 0 1.3rem; display: flex; align-items: center; gap: 1.3rem;
+}
+.letreiro__grupo b::before { content: "●"; color: var(--verde); font-size: .5rem; }
+@keyframes letreiro { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* --- cabeçalho -------------------------------------------------------------- */
+.topo {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(255,255,255,.94); backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--borda);
+}
+.topo__inner { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; min-height: 72px; }
+.marca { display: flex; align-items: center; gap: .6rem; text-decoration: none; }
+.marca__icone { width: 34px; height: 34px; flex-shrink: 0; }
+.marca__texto { font-size: 1.35rem; font-weight: 800; letter-spacing: -.02em; }
+.marca__texto b { color: var(--verde); }
+.marca__texto span:first-of-type { color: var(--azul); }
+.marca__sub {
+  display: block; font-size: .48rem; letter-spacing: .24em; font-weight: 700;
+  color: var(--cinza); text-transform: uppercase; margin-top: -3px;
+}
+.nav { display: flex; align-items: center; gap: 1.75rem; }
+.nav a:not(.btn) { color: var(--azul-escuro); text-decoration: none; font-size: .95rem; font-weight: 600; }
+.nav a:not(.btn):hover { color: var(--verde-escuro); }
+@media (max-width: 860px) { .nav__links { display: none; } }
+@media (max-width: 430px) {
+  .wrap { padding: 0 1.15rem; }
+  .marca__texto { font-size: 1.1rem; }
+  .topo .btn { padding: .7rem 1rem; font-size: .88rem; }
+}
+
+/* --- botões ------------------------------------------------------------------ */
+.btn {
+  display: inline-flex; align-items: center; gap: .5rem;
+  background: var(--verde); color: var(--branco);
+  padding: .85rem 1.6rem; border-radius: 100px;
+  text-decoration: none; font-weight: 700; font-size: .95rem;
+  border: 1px solid var(--verde);
+  transition: background .15s ease, transform .15s ease;
+}
+.btn:hover { background: var(--verde-escuro); transform: translateY(-1px); }
+.btn--vazado { background: transparent; color: var(--branco); border-color: rgba(255,255,255,.6); }
+.btn--vazado:hover { background: rgba(255,255,255,.12); }
+.btn--azul { background: var(--azul); border-color: var(--azul); }
+.btn--azul:hover { background: var(--azul-escuro); }
+
+/* --- hero: foto real cortada por cima ----------------------------------------- */
+/* Foto real do salão (assets/img/ambiente-salao.webp) tem o texto de
+   campanha ("SEM BAGUNÇA EM CASA...") na metade de baixo. Um background com
+   background-position:top corta uma fração DIFERENTE da imagem dependendo da
+   proporção do container — em telas estreitas/altas (celular) o container
+   fica proporcionalmente mais alto e a imagem inteira aparece, revelando o
+   texto. Por isso a foto vive num bloco à parte (.hero__foto) com
+   aspect-ratio FIXO: a fração visível da imagem original passa a depender só
+   dessa proporção fixa, não da largura da tela. */
+.hero {
+  position: relative; overflow: hidden;
+  min-height: min(82vh, 660px);
+  display: flex; align-items: center;
+  padding: clamp(3rem, 8vw, 6rem) 0;
+  background: var(--azul-escuro);
+  color: var(--branco);
+}
+.hero__foto {
+  position: absolute; top: 0; left: 0; width: 100%;
+  aspect-ratio: 8 / 5; overflow: hidden; z-index: 0;
+}
+.hero__foto img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+.hero__foto::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(16,42,82,.45) 0%, rgba(16,42,82,.85) 75%, var(--azul-escuro) 100%);
+}
+.hero__conteudo { max-width: 640px; position: relative; z-index: 2; }
+.hero .bolha { z-index: 1; }
+.hero__olho {
+  display: inline-flex; align-items: center; gap: .5rem;
+  color: var(--branco); font-size: .78rem; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase; margin-bottom: 1rem;
+  background: rgba(92,187,42,.28); border: 1px solid rgba(92,187,42,.5);
+  padding: .4rem .9rem; border-radius: 100px;
+}
+h1.hero__titulo { color: var(--branco); }
+.hero__sub { font-size: 1.1rem; color: #dce6f5; max-width: 46ch; }
+.hero__acoes { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.75rem; }
+.acoes { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.5rem; }
+
+/* --- prova social --------------------------------------------------------------- */
+.prova { border-bottom: 1px solid rgba(221,229,242,.55); background: var(--creme); }
+.prova__inner {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+  gap: .85rem 2.5rem; padding: 1.05rem 0; text-align: center;
+}
+.prova__nota { font-size: 1.6rem; font-weight: 800; color: var(--azul); }
+.prova__estrelas { color: var(--verde); letter-spacing: .1em; }
+.prova__texto { color: var(--cinza); font-size: .95rem; margin: 0; }
+.prova__destaque { color: var(--verde-escuro); font-weight: 700; }
+
+/* --- seções ----------------------------------------------------------------------- */
+.secao { padding: clamp(3rem, 6vw, 5rem) 0; position: relative; }
+.secao--creme { background: var(--creme); }
+.secao--azul { background: var(--azul); color: var(--branco); }
+.secao--azul h2, .secao--azul .secao__olho { color: var(--branco); }
+.secao__cabeca { max-width: 62ch; margin-bottom: 2.5rem; }
+.secao__olho {
+  color: var(--verde-escuro); font-size: .78rem; font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase; margin-bottom: .6rem;
+}
+
+/* --- diferenciais (grid de ícones) -------------------------------------------------- */
+.diferenciais { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.1rem; }
+@media (max-width: 980px) { .diferenciais { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 620px) { .diferenciais { grid-template-columns: repeat(2, 1fr); } }
+.dif {
+  background: var(--branco); border: 1px solid var(--borda); border-radius: var(--raio);
+  padding: 1.5rem 1.1rem; text-align: center;
+}
+.dif__icone {
+  width: 44px; height: 44px; margin: 0 auto .9rem;
+  color: var(--verde-escuro);
+}
+.dif h3 { font-size: .98rem; margin-bottom: .35rem; }
+.dif p { font-size: .86rem; color: var(--cinza); margin: 0; }
+
+/* --- antes/depois -------------------------------------------------------------------- */
+.antes-depois { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 3.5rem); align-items: center; }
+@media (max-width: 880px) { .antes-depois { grid-template-columns: 1fr; } }
+.antes-depois__img { border-radius: var(--raio); overflow: hidden; box-shadow: var(--sombra); }
+
+/* --- cards de serviço ------------------------------------------------------------------ */
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+@media (max-width: 940px) { .cards { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 620px) { .cards { grid-template-columns: 1fr; } }
+.card {
+  padding: 1.8rem; background: var(--branco);
+  border: 1px solid var(--borda); border-radius: var(--raio);
+  transition: border-color .15s ease, transform .15s ease;
+}
+.card:hover { border-color: var(--verde); transform: translateY(-2px); }
+.card__selo {
+  display: inline-block; font-size: .72rem; font-weight: 800; letter-spacing: .05em;
+  color: var(--verde-escuro); background: var(--verde-claro);
+  padding: .25rem .6rem; border-radius: 100px; text-transform: uppercase;
+  margin-bottom: .8rem;
+}
+.card h3 { color: var(--azul-escuro); }
+.card p { color: var(--cinza); font-size: .95rem; margin: 0; }
+
+/* --- conheça o espaço (imagem real + lista) --------------------------------------------- */
+.espaco { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(2rem, 5vw, 3.5rem); align-items: center; }
+@media (max-width: 880px) { .espaco { grid-template-columns: 1fr; } }
+.espaco__img {
+  border-radius: var(--raio); overflow: hidden; box-shadow: var(--sombra);
+  aspect-ratio: 3 / 2; position: relative;
+}
+.espaco__img img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.espaco__lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
+.espaco__lista li { display: flex; align-items: flex-start; gap: .8rem; }
+.espaco__lista svg { width: 24px; height: 24px; flex-shrink: 0; color: var(--verde-escuro); margin-top: 2px; }
+
+/* --- depoimentos ------------------------------------------------------------------------- */
+.depos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+@media (max-width: 940px) { .depos { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 620px) { .depos { grid-template-columns: 1fr; } }
+.depo { background: var(--branco); border: 1px solid var(--borda); border-radius: var(--raio); padding: 1.6rem; }
+.depo blockquote { margin: 0 0 1rem; font-size: .96rem; }
+.depo footer { font-size: .86rem; color: var(--cinza); }
+.depo__estrelas { color: var(--verde); letter-spacing: .08em; margin-bottom: .6rem; }
+
+/* --- instagram --------------------------------------------------------------------------- */
+.insta__grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: .7rem; }
+@media (max-width: 760px) { .insta__grid { grid-template-columns: repeat(3, 1fr); } }
+.insta__item {
+  display: block; aspect-ratio: 1 / 1; overflow: hidden; border-radius: 10px;
+  position: relative;
+}
+.insta__item img { width: 100%; height: 100%; object-fit: cover; transition: transform .25s ease; }
+.insta__item:hover img { transform: scale(1.06); }
+.insta__cta { text-align: center; margin-top: 1.75rem; }
+
+/* --- contato ------------------------------------------------------------------------------- */
+.contato__grid { display: grid; grid-template-columns: 1fr 1.15fr; gap: 2.5rem; }
+@media (max-width: 880px) { .contato__grid { grid-template-columns: 1fr; } }
+.dados { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.25rem; }
+.dados li { display: grid; grid-template-columns: auto 1fr; gap: .9rem; align-items: start; }
+.dados strong { display: block; font-size: .82rem; text-transform: uppercase; letter-spacing: .1em; color: var(--cinza); font-weight: 700; }
+.dados .ico { color: var(--verde-escuro); font-size: 1.15rem; line-height: 1.5; }
+.referencia { color: var(--cinza); font-size: .9rem; }
+.mapa { border: 1px solid var(--borda); border-radius: var(--raio); overflow: hidden; min-height: 340px; background: var(--verde-claro); }
+.mapa iframe { display: block; width: 100%; height: 100%; min-height: 340px; border: 0; }
+
+/* --- rodapé ---------------------------------------------------------------------------------- */
+.rodape { background: var(--azul-escuro); color: #b9c8e2; padding: 3rem 0 2rem; font-size: .93rem; }
+.rodape a { color: #cfe0f7; }
+.rodape__grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 2rem; }
+@media (max-width: 760px) { .rodape__grid { grid-template-columns: 1fr; } }
+.rodape h3 { color: var(--branco); font-size: .82rem; text-transform: uppercase; letter-spacing: .12em; }
+.rodape ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
+.rodape ul a { text-decoration: none; }
+.rodape ul a:hover { text-decoration: underline; }
+.rodape .marca__texto { color: var(--branco); }
+.rodape .marca__texto b { color: var(--verde); }
+.rodape__fim { border-top: 1px solid #24406e; margin-top: 2.5rem; padding-top: 1.5rem; font-size: .85rem; color: #90a3c4; }
+
+/* --- botão flutuante de WhatsApp ---------------------------------------------------------------- */
+/* Número corrigido: a bio do Instagram tem um wa.me com dígito faltando
+   (ver empresa.md). Aqui sempre 5531990609491. */
+.zap-flutua {
+  position: fixed; right: 20px; bottom: 20px; z-index: 90;
+  width: 58px; height: 58px; border-radius: 50%;
+  background: var(--zap); display: grid; place-items: center;
+  box-shadow: 0 6px 18px rgba(16, 42, 82, .35);
+  transition: transform .15s ease;
+}
+.zap-flutua:hover { transform: scale(1.06); }
+.zap-flutua svg { width: 30px; height: 30px; fill: #fff; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition: none !important; }
+}
