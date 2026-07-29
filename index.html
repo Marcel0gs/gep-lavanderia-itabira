@@ -7,6 +7,12 @@
 <meta name="description" content="Lave e seque sua roupa em até 60 minutos na G&amp;P Lavanderia, self service no Centro de Itabira/MG. Ambiente climatizado, wi-fi grátis e cantinho das crianças. Aberto todos os dias, 05h às 00h.">
 <link rel="canonical" href="https://marcel0gs.github.io/gep-lavanderia-itabira/">
 
+<!-- Marca que o JS está disponível ANTES de qualquer pintura. É por essa classe
+     que o CSS decide a altura do hero: assim a seção já nasce com a altura do
+     percurso, em vez de crescer depois e empurrar a página. Precisa ficar aqui
+     em cima, sem `defer` e sem `async` — a graça é justamente ser síncrono. -->
+<script>document.documentElement.className += " js";</script>
+
 <!-- A fachada é o maior elemento do primeiro quadro — é ela que o navegador
      cronometra como LCP. Preload aqui em cima, ANTES da folha de estilo, faz o
      download começar no primeiro byte do HTML em vez de esperar o CSS baixar e
@@ -99,10 +105,10 @@
        interpolação sai de UMA variável CSS (--p, de 0 a 1) que o script no
        fim da seção atualiza a cada frame de scroll.
 
-       Sem JS, ou com "reduzir movimento" ligado, o script não adiciona a
-       classe .palco--ativo: a seção fica com altura normal de hero e mostra
-       só o estado inicial (--p = 0), que já é legível e já tem CTA na tela.
-       Nada de layout depende do script. -->
+       Sem JS não existe a classe `js` no <html>: a seção fica com altura
+       normal de hero e o CSS entrega direto o quadro final — foto em tela
+       cheia, título no meio e os botões embaixo. Nada de layout depende de
+       script que rode depois da página pintar. -->
   <section class="palco">
     <div class="palco__trilho">
 
@@ -189,7 +195,10 @@
       // Efeitos de animação desligado, que muita gente desliga por
       // desempenho. Travar por causa dele escondia o hero inteiro de quem
       // nunca pediu nada disso.
-      palco.classList.add("palco--ativo");
+      //
+      // Quem liga o modo animado é a classe `js` no <html>, marcada lá no
+      // <head> — aqui não se mexe em altura nenhuma, senão a página cresce
+      // depois de pintada e o deslocamento de layout volta.
 
       // As duas medidas do percurso (onde a seção começa e quanto scroll ela
       // prende) só mudam quando a janela muda de tamanho. Ficam em cache: ler

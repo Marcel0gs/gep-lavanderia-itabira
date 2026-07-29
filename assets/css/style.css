@@ -204,10 +204,16 @@ section[id] { scroll-margin-top: 84px; }
   background: var(--azul-escuro);
   color: var(--branco);
 }
-.palco--ativo { height: 200vh; }
+/* A altura do percurso vem de `html.js`, não de uma classe que o script do
+   fim da seção adiciona. Parece detalhe, mas é o que separa 0 de um CLS feio:
+   marcada por script no <head>, a classe existe antes da primeira pintura e a
+   seção já nasce com a altura final. Marcada lá embaixo, num aparelho lento a
+   página pinta com o hero em 760px e logo depois ele vira 190vh, empurrando
+   tudo que vem abaixo — deslocamento de layout que o PageSpeed cobra. */
+html.js .palco { height: 200vh; }
 
 .palco__trilho { position: relative; height: 100%; overflow: hidden; }
-.palco--ativo .palco__trilho { position: sticky; top: 0; height: 100vh; }
+html.js .palco .palco__trilho { position: sticky; top: 0; height: 100vh; }
 
 /* fundo: fachada da loja, nítida. Só um degradê leve pra firmar o contraste
    do texto, fechando um pouco conforme o card toma a tela. */
@@ -330,19 +336,19 @@ section[id] { scroll-margin-top: 84px; }
    movimento não significa nada, entrega direto o quadro final: foto em tela
    cheia, título no meio e os botões embaixo. Hero comum, forte, sem scroll
    morto. */
-.palco:not(.palco--ativo) .palco__midia {
+html:not(.js) .palco__midia {
   width: 100%; height: 100%; border-radius: 0; box-shadow: none;
 }
 /* aqui o card já nasce em tela cheia, então o zoom do card pequeno — que
    com --p parado em 0 estaria no máximo — não tem razão de existir */
-.palco:not(.palco--ativo) .palco__midia img { transform: none; }
-.palco:not(.palco--ativo) .palco__midia::after { opacity: .6; }
-.palco:not(.palco--ativo) .palco__nota { display: none; }
-.palco:not(.palco--ativo) .palco__final { opacity: 1; pointer-events: auto; }
+html:not(.js) .palco__midia img { transform: none; }
+html:not(.js) .palco__midia::after { opacity: .6; }
+html:not(.js) .palco__nota { display: none; }
+html:not(.js) .palco__final { opacity: 1; pointer-events: auto; }
 
 @media (max-width: 700px) {
   .palco { --w0: 68vw; }
-  .palco--ativo { height: 190vh; }
+  html.js .palco { height: 190vh; }
   .palco__meia { font-size: clamp(1.25rem, 5.8vw, 1.8rem); }
   .palco__nota { font-size: .8rem; }
   .palco__nota--dir { font-size: .74rem; }
