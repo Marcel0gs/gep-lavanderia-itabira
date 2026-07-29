@@ -297,12 +297,11 @@ section[id] { scroll-margin-top: 84px; }
 }
 .palco__acoes { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; }
 
-/* Estado parado: sem JS, ou com "reduzir movimento" ligado no sistema. (No
-   Windows isso vem de Configurações > Acessibilidade > Efeitos visuais >
-   Efeitos de animação; desligado lá, o Chrome reporta reduce e o script não
-   liga a animação.) Em vez de mostrar o card pequeno — que sem o movimento
-   fica sem sentido —, entrega direto o quadro final: foto em tela cheia,
-   título no meio e os botões embaixo. Hero comum, forte, sem scroll morto. */
+/* Estado parado: só quando o JS não roda (a trava de "reduzir movimento"
+   saiu do script — ver o comentário lá). Em vez do card pequeno, que sem o
+   movimento não significa nada, entrega direto o quadro final: foto em tela
+   cheia, título no meio e os botões embaixo. Hero comum, forte, sem scroll
+   morto. */
 .palco:not(.palco--ativo) .palco__midia {
   width: 100%; height: 100%; border-radius: 0; box-shadow: none;
 }

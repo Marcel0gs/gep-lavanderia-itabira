@@ -161,8 +161,18 @@
     (function () {
       var palco = document.querySelector(".palco");
       if (!palco) return;
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+      // Sem trava de "reduzir movimento" aqui, de propósito: essa abertura é
+      // 1:1 com o scroll de quem está lendo — não toca sozinha, não tem
+      // parallax atrasado, para no instante em que a pessoa para. O que de
+      // fato incomoda quem tem sensibilidade a movimento é o que se mexe sem
+      // comando, e isso (as bolhas subindo) continua desligado sob `reduce`
+      // pela regra que está no CSS.
+      //
+      // Peso prático de ter travado antes: no Windows o sinal `reduce` vem de
+      // Efeitos de animação desligado, que muita gente desliga por
+      // desempenho. Travar por causa dele escondia o hero inteiro de quem
+      // nunca pediu nada disso.
       palco.classList.add("palco--ativo");
 
       var agendado = false;
