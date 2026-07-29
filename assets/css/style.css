@@ -404,6 +404,68 @@ section[id] { scroll-margin-top: 84px; }
 .card h3 { color: var(--azul-escuro); }
 .card p { color: var(--cinza); font-size: .95rem; margin: 0; }
 
+/* --- preços e modo de uso ---------------------------------------------------------------- */
+.uso { display: grid; grid-template-columns: .85fr 1.15fr; gap: clamp(1.5rem, 4vw, 3rem); align-items: start; }
+@media (max-width: 880px) { .uso { grid-template-columns: 1fr; } }
+
+.tabela {
+  background: var(--azul); color: var(--branco);
+  border-radius: var(--raio); padding: 1.6rem; box-shadow: var(--sombra);
+  position: relative; z-index: 1;
+}
+.tabela__titulo {
+  color: var(--branco); font-size: .78rem; font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase; margin-bottom: 1.1rem;
+}
+.tabela__linha {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: .85rem 0; border-top: 1px solid rgba(255,255,255,.18);
+}
+.tabela__linha strong { display: block; font-size: 1.05rem; }
+.tabela__linha span { font-size: .85rem; color: #b9cdea; }
+.tabela__valor { font-size: 1.5rem; font-weight: 800; color: var(--verde); white-space: nowrap; }
+.tabela__pgto {
+  display: flex; flex-wrap: wrap; gap: .45rem;
+  margin: 1.1rem 0 .8rem; padding-top: 1.1rem;
+  border-top: 1px solid rgba(255,255,255,.18);
+}
+.tabela__pgto span {
+  font-size: .8rem; font-weight: 700; padding: .3rem .7rem;
+  border-radius: 100px; background: rgba(255,255,255,.12);
+}
+.tabela__nota { font-size: .85rem; color: #b9cdea; margin: 0; }
+
+/* passos numerados: o número é gerado pelo contador da própria <ol>, então a
+   ordem visual nunca sai do lugar se um passo for inserido no meio */
+.passos { list-style: none; counter-reset: passo; margin: 0; padding: 0; display: grid; gap: .7rem; }
+.passos li {
+  counter-increment: passo;
+  display: grid; grid-template-columns: auto 1fr; gap: .9rem; align-items: center;
+  background: var(--branco); border: 1px solid var(--borda);
+  border-radius: var(--raio); padding: .85rem 1.1rem;
+  font-size: .97rem;
+}
+.passos li::before {
+  content: counter(passo);
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--verde-claro); color: var(--verde-escuro);
+  font-weight: 800; font-size: .9rem;
+  display: grid; place-items: center;
+}
+
+.sabia {
+  display: grid; grid-template-columns: auto 1fr; gap: 1.1rem; align-items: start;
+  margin-top: 1.75rem; padding: 1.5rem;
+  background: var(--verde-claro); border: 1px solid #cbeeb8;
+  border-radius: var(--raio); position: relative; z-index: 1;
+}
+.sabia__icone { width: 34px; height: 34px; color: var(--verde-escuro); flex-shrink: 0; }
+.sabia h3 { margin-bottom: .4rem; color: var(--verde-escuro); }
+.sabia p { margin: 0; font-size: .97rem; }
+@media (max-width: 520px) {
+  .sabia { grid-template-columns: 1fr; gap: .7rem; }
+}
+
 /* --- conheça o espaço (imagem real + lista) --------------------------------------------- */
 .espaco { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(2rem, 5vw, 3.5rem); align-items: center; }
 @media (max-width: 880px) { .espaco { grid-template-columns: 1fr; } }
@@ -450,13 +512,19 @@ section[id] { scroll-margin-top: 84px; }
 .insta__titulo { color: var(--branco); font-size: clamp(1.8rem, 4vw, 2.7rem); }
 .insta__titulo span { color: var(--verde); }
 
+/* --passo (distância entre cards), --card (largura de referência) e --dyf
+   (escala do desnível) são os três números que governam o leque inteiro.
+   Mudando eles no celular o mesmo leque encolhe — não vira carrossel. */
 .insta__leque {
+  --passo: 152px; --card: 180px; --dyf: 1px;
   position: relative; z-index: 1;
   height: 300px; margin: 2.5rem 0 1rem;
 }
 .insta__item {
+  --x: calc(var(--i) * var(--passo));
+  --y: calc(var(--dy) * var(--dyf));
   display: block; position: absolute; top: 50%; left: 50%;
-  width: var(--w); aspect-ratio: 3 / 4; overflow: hidden; border-radius: 18px;
+  width: calc(var(--card) * var(--n)); aspect-ratio: 3 / 4; overflow: hidden; border-radius: 18px;
   box-shadow: 0 12px 30px rgba(0,0,0,.35);
   transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) rotate(var(--r));
   transition: transform .25s ease, box-shadow .25s ease;
@@ -479,18 +547,20 @@ section[id] { scroll-margin-top: 84px; }
   opacity: 1;
 }
 
+/* No celular o leque continua sendo leque: só encolhe. Antes virava um
+   carrossel horizontal com barra de rolagem, que quebrava a composição e
+   ainda competia com o scroll da página. */
 @media (max-width: 760px) {
-  .insta__leque {
-    height: auto; display: flex; align-items: center; justify-content: flex-start;
-    overflow-x: auto; padding: .5rem .25rem 1rem; margin: 2rem 0 .5rem;
-    scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+  .insta__leque { --passo: 58px; --card: 142px; --dyf: .5px; height: 250px; margin: 2rem 0 .5rem; }
+  .insta__item { border-radius: 13px; box-shadow: 0 8px 20px rgba(0,0,0,.4); }
+  /* sem hover em toque: levantar um card com o dedo em cima não acontece */
+  .insta__item:hover {
+    transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) rotate(var(--r));
+    box-shadow: 0 8px 20px rgba(0,0,0,.4);
   }
-  .insta__item, .insta__item--entrando, .insta__leque--visivel .insta__item--entrando {
-    position: static; width: 128px !important; flex: 0 0 auto;
-    transform: none !important; opacity: 1; margin-left: -14px;
-  }
-  .insta__item:first-child { margin-left: 0; }
-  .insta__item:hover { transform: none !important; }
+}
+@media (max-width: 400px) {
+  .insta__leque { --passo: 52px; --card: 126px; height: 225px; }
 }
 
 /* --- contato ------------------------------------------------------------------------------- */
