@@ -67,23 +67,29 @@ section[id] { scroll-margin-top: 84px; }
 }
 
 /* --- bolhas subindo (efeito animado) -------------------------------------- */
-/* Cada bolha define sua própria largura/posição/duração/atraso via style
-   inline (mesmo padrão das .bolha estáticas). --deriva controla o leve
-   desvio lateral, pra não subir em linha reta. */
+/* Dispara ao carregar a página (ou recarregar) e se repete a cada 30s — não
+   é loop contínuo. Truque: duração fixa de 30s pra todas, mas a subida em si
+   acontece só nos primeiros ~30% da linha do tempo (poucos segundos); no
+   resto do ciclo a bolha fica parada e invisível, esperando o próximo
+   "estouro" de 30 em 30 segundos. Cada bolha define largura/posição/atraso
+   via style inline (mesmo padrão das .bolha estáticas). --deriva controla o
+   leve desvio lateral, pra não subir em linha reta. */
 .bolha-sobe {
   position: absolute; bottom: -10%;
   border-radius: 50%;
   border: 2px solid rgba(255,255,255,.6);
   background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.4), rgba(255,255,255,.06) 65%);
-  animation-name: subir; animation-timing-function: ease-in; animation-iteration-count: infinite;
+  animation-name: subir; animation-duration: 30s; animation-timing-function: linear;
+  animation-iteration-count: infinite;
   pointer-events: none; z-index: 1;
   --deriva: 18px;
 }
 @keyframes subir {
-  0%   { transform: translate(0, 0) scale(.85); opacity: 0; }
-  12%  { opacity: .85; }
-  80%  { opacity: .45; }
-  100% { transform: translate(var(--deriva), -130%) scale(1.1); opacity: 0; }
+  0%    { transform: translate(0, 0) scale(.85); opacity: 0; }
+  3%    { opacity: .85; }
+  22%   { opacity: .45; }
+  28%   { transform: translate(var(--deriva), -130%) scale(1.1); opacity: 0; }
+  100%  { transform: translate(var(--deriva), -130%) scale(1.1); opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -265,16 +271,46 @@ h1.hero__titulo { color: var(--branco); }
 .depo footer { font-size: .86rem; color: var(--cinza); }
 .depo__estrelas { color: var(--verde); letter-spacing: .08em; margin-bottom: .6rem; }
 
-/* --- instagram --------------------------------------------------------------------------- */
-.insta__grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: .7rem; }
-@media (max-width: 760px) { .insta__grid { grid-template-columns: repeat(3, 1fr); } }
-.insta__item {
-  display: block; aspect-ratio: 1 / 1; overflow: hidden; border-radius: 10px;
-  position: relative;
+/* --- instagram: leque de fotos sobrepostas ------------------------------------------------ */
+/* Cartões em leque, tamanho e altura crescendo em direção ao centro, se
+   sobrepondo com margem negativa — mesma ideia de composição de referência
+   passada pelo cliente (fileira de fotos com alturas alternadas). Em telas
+   estreitas isso fica apertado demais, então vira carrossel horizontal com
+   scroll — ver media query abaixo. */
+.insta__grid {
+  display: flex; align-items: flex-end; justify-content: center;
+  padding: 1.5rem 0 .5rem; flex-wrap: nowrap;
 }
-.insta__item img { width: 100%; height: 100%; object-fit: cover; transition: transform .25s ease; }
-.insta__item:hover img { transform: scale(1.06); }
-.insta__cta { text-align: center; margin-top: 1.75rem; }
+.insta__item {
+  display: block; flex: 0 0 auto; width: 150px; aspect-ratio: 3 / 4;
+  overflow: hidden; border-radius: 18px; position: relative;
+  box-shadow: var(--sombra); margin-left: -26px;
+  transition: transform .2s ease, box-shadow .2s ease, z-index 0s;
+}
+.insta__item:first-child { margin-left: 0; }
+.insta__item:nth-child(1), .insta__item:nth-child(6) { margin-bottom: 0; }
+.insta__item:nth-child(2), .insta__item:nth-child(5) { margin-bottom: 32px; }
+.insta__item:nth-child(3), .insta__item:nth-child(4) { margin-bottom: 54px; width: 168px; }
+.insta__item:hover {
+  transform: translateY(-10px) scale(1.04); z-index: 10 !important;
+  box-shadow: 0 18px 34px rgba(16,42,82,.22);
+}
+.insta__item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.insta__cta { text-align: center; margin-top: 2rem; }
+
+@media (max-width: 760px) {
+  .insta__grid {
+    justify-content: flex-start; overflow-x: auto; padding: .5rem .25rem 1rem;
+    scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+  }
+  .insta__item, .insta__item:nth-child(1), .insta__item:nth-child(2),
+  .insta__item:nth-child(3), .insta__item:nth-child(4),
+  .insta__item:nth-child(5), .insta__item:nth-child(6) {
+    width: 128px; margin-bottom: 0; scroll-snap-align: start;
+  }
+  .insta__item { margin-left: -14px; }
+  .insta__item:first-child { margin-left: 0; }
+}
 
 /* --- contato ------------------------------------------------------------------------------- */
 .contato__grid { display: grid; grid-template-columns: 1fr 1.15fr; gap: 2.5rem; }
