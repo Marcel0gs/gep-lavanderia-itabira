@@ -94,7 +94,28 @@ section[id] { scroll-margin-top: 84px; }
 
 @media (prefers-reduced-motion: reduce) {
   .bolha-sobe { animation: none; opacity: 0; }
+  .bolha-flutua { animation: none; }
 }
+
+/* --- bolhas flutuando (idle, sem estourar) -------------------------------- */
+/* Diferente da .bolha-sobe (que sobe e some, disparada em ciclo): essa aqui
+   fica no lugar e só balança devagar, pra dar vida a uma seção sem virar o
+   "estouro de bolhas" do hero. Cada uma define tamanho/posição/duração/atraso
+   e o desvio do balanço (--fx/--fy) via style inline, mesmo padrão das
+   outras .bolha. Usa a variante --escura porque essas seções têm fundo claro. */
+.bolha-flutua {
+  animation-name: flutuar; animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite; animation-duration: var(--duracao, 7s);
+  --fx: 10px; --fy: -12px;
+}
+@keyframes flutuar {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25%      { transform: translate(var(--fx), var(--fy)) rotate(4deg); }
+  50%      { transform: translate(0, 0) rotate(0deg); }
+  75%      { transform: translate(calc(var(--fx) * -1), calc(var(--fy) * -1)) rotate(-4deg); }
+}
+
+.secao--bolhas { overflow: hidden; }
 
 /* --- letreiro (faixa animada) --------------------------------------------- */
 .letreiro { overflow: hidden; background: var(--verde-claro); border-bottom: 1px solid var(--borda); padding: .55rem 0; }
@@ -271,45 +292,72 @@ h1.hero__titulo { color: var(--branco); }
 .depo footer { font-size: .86rem; color: var(--cinza); }
 .depo__estrelas { color: var(--verde); letter-spacing: .08em; margin-bottom: .6rem; }
 
-/* --- instagram: leque de fotos sobrepostas ------------------------------------------------ */
-/* Cartões em leque, tamanho e altura crescendo em direção ao centro, se
-   sobrepondo com margem negativa — mesma ideia de composição de referência
-   passada pelo cliente (fileira de fotos com alturas alternadas). Em telas
-   estreitas isso fica apertado demais, então vira carrossel horizontal com
-   scroll — ver media query abaixo. */
-.insta__grid {
-  display: flex; align-items: flex-end; justify-content: center;
-  padding: 1.5rem 0 .5rem; flex-wrap: nowrap;
+/* --- instagram: leque de fotos flutuantes ------------------------------------------------- */
+/* Seção escura (mesma cor do header/rodapé) com cartões em leque: cada
+   .insta__item recebe posição (--x/--y), rotação (--r) e largura (--w) via
+   style inline, igual ao padrão já usado nas .bolha-sobe. Centro maior e
+   mais alto no z-index, bordas menores e mais afastadas — referência visual
+   passada pelo cliente. Em telas estreitas isso não cabe, então vira
+   carrossel horizontal (ver media query abaixo). */
+.secao--noite { background: var(--azul-escuro); color: var(--branco); overflow: hidden; }
+.secao--noite .secao__olho--claro { color: #9fd97a; }
+.secao__cabeca--centro { max-width: 46ch; margin-left: auto; margin-right: auto; text-align: center; }
+
+/* grade de fundo sutil, só decorativa, esmaecendo nas bordas */
+.insta__grade {
+  position: absolute; inset: 0; z-index: 0; opacity: .16;
+  background-image:
+    linear-gradient(to right, #cfe0f7 1px, transparent 1px),
+    linear-gradient(to bottom, #cfe0f7 1px, transparent 1px);
+  background-size: 3rem 3rem;
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 60%, transparent 100%);
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 60%, transparent 100%);
+}
+
+.insta__titulo { color: var(--branco); font-size: clamp(1.8rem, 4vw, 2.7rem); }
+.insta__titulo span { color: var(--verde); }
+
+.insta__leque {
+  position: relative; z-index: 1;
+  height: 300px; margin: 2.5rem 0 1rem;
 }
 .insta__item {
-  display: block; flex: 0 0 auto; width: 150px; aspect-ratio: 3 / 4;
-  overflow: hidden; border-radius: 18px; position: relative;
-  box-shadow: var(--sombra); margin-left: -26px;
-  transition: transform .2s ease, box-shadow .2s ease, z-index 0s;
+  display: block; position: absolute; top: 50%; left: 50%;
+  width: var(--w); aspect-ratio: 3 / 4; overflow: hidden; border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.35);
+  transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) rotate(var(--r));
+  transition: transform .25s ease, box-shadow .25s ease;
 }
-.insta__item:first-child { margin-left: 0; }
-.insta__item:nth-child(1), .insta__item:nth-child(6) { margin-bottom: 0; }
-.insta__item:nth-child(2), .insta__item:nth-child(5) { margin-bottom: 32px; }
-.insta__item:nth-child(3), .insta__item:nth-child(4) { margin-bottom: 54px; width: 168px; }
 .insta__item:hover {
-  transform: translateY(-10px) scale(1.04); z-index: 10 !important;
-  box-shadow: 0 18px 34px rgba(16,42,82,.22);
+  transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y) - 10px)) rotate(0deg) scale(1.05);
+  box-shadow: 0 20px 40px rgba(0,0,0,.45); z-index: 50 !important;
 }
 .insta__item img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.insta__cta { text-align: center; margin-top: 2rem; }
+.insta__cta { text-align: center; margin-top: 1.5rem; position: relative; z-index: 1; }
+
+/* estado inicial (fotos recolhidas no centro) — só existe com JS + sem
+   "reduzir movimento"; ver script inline junto da seção no HTML */
+.insta__item--entrando {
+  transform: translate(-50%, -50%) rotate(0deg) scale(.85); opacity: 0;
+  transition: transform .6s cubic-bezier(.2,.8,.2,1), opacity .4s ease;
+}
+.insta__leque--visivel .insta__item--entrando {
+  transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) rotate(var(--r)) scale(1);
+  opacity: 1;
+}
 
 @media (max-width: 760px) {
-  .insta__grid {
-    justify-content: flex-start; overflow-x: auto; padding: .5rem .25rem 1rem;
+  .insta__leque {
+    height: auto; display: flex; align-items: center; justify-content: flex-start;
+    overflow-x: auto; padding: .5rem .25rem 1rem; margin: 2rem 0 .5rem;
     scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
   }
-  .insta__item, .insta__item:nth-child(1), .insta__item:nth-child(2),
-  .insta__item:nth-child(3), .insta__item:nth-child(4),
-  .insta__item:nth-child(5), .insta__item:nth-child(6) {
-    width: 128px; margin-bottom: 0; scroll-snap-align: start;
+  .insta__item, .insta__item--entrando, .insta__leque--visivel .insta__item--entrando {
+    position: static; width: 128px !important; flex: 0 0 auto;
+    transform: none !important; opacity: 1; margin-left: -14px;
   }
-  .insta__item { margin-left: -14px; }
   .insta__item:first-child { margin-left: 0; }
+  .insta__item:hover { transform: none !important; }
 }
 
 /* --- contato ------------------------------------------------------------------------------- */

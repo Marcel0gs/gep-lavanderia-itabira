@@ -192,7 +192,14 @@
   <!-- Gráfico "chega assim / sai assim" reaproveitado como está, é arte real
        do feed (assets/img/antes-depois.webp) — peça de design limpa, não
        precisou de recorte. -->
-  <section class="secao secao--creme">
+  <section class="secao secao--creme secao--bolhas">
+    <div class="bolha bolha--escura bolha-flutua" style="width:26px;height:26px;top:10%;left:6%;--duracao:8s;--fx:8px;--fy:-14px"></div>
+    <div class="bolha bolha--escura bolha-flutua" style="width:16px;height:16px;top:24%;left:22%;--duracao:6.5s;animation-delay:.6s;--fx:-6px;--fy:10px"></div>
+    <div class="bolha bolha--escura bolha-flutua" style="width:44px;height:44px;top:66%;left:12%;--duracao:10s;animation-delay:1.2s;--fx:10px;--fy:12px"></div>
+    <div class="bolha bolha--escura bolha-flutua" style="width:20px;height:20px;top:82%;left:34%;--duracao:7s;animation-delay:.3s;--fx:-8px;--fy:-10px"></div>
+    <div class="bolha bolha--escura bolha-flutua" style="width:30px;height:30px;bottom:5%;right:6%;--duracao:9s;animation-delay:.9s;--fx:-10px;--fy:12px"></div>
+    <div class="bolha bolha--escura bolha-flutua" style="width:18px;height:18px;bottom:10%;right:46%;--duracao:6s;animation-delay:1.6s;--fx:8px;--fy:10px"></div>
+    <div class="bolha bolha--escura bolha-flutua" style="width:22px;height:22px;bottom:3%;right:38%;--duracao:7.5s;animation-delay:.2s;--fx:-6px;--fy:-8px"></div>
     <div class="wrap antes-depois">
       <div>
         <p class="secao__olho">O resultado</p>
@@ -324,26 +331,54 @@
        mostra volume e qualidade de conteúdo que já produzem, reforça que é
        negócio ativo. [CONFIRMAR] handle: artes do feed mostram
        @gplavanderiaa, perfil mostra @geplavanderia — confirmar qual é o
-       oficial antes de publicar (ver empresa.md). -->
-  <section class="secao secao--creme">
+       oficial antes de publicar (ver empresa.md).
+       Composição em leque com card central maior e entrada animada —
+       referência visual passada pelo cliente. Fundo escuro (mesma cor do
+       header/rodapé) pra destacar as fotos como "momento" da página, não
+       mais uma seção clara igual às anteriores. -->
+  <section class="secao secao--noite">
+    <div class="insta__grade" aria-hidden="true"></div>
     <div class="wrap">
-      <div class="secao__cabeca">
-        <p class="secao__olho">Segue a gente</p>
-        <h2>Instagram da GeP Lavanderia</h2>
+      <div class="secao__cabeca secao__cabeca--centro">
+        <p class="secao__olho secao__olho--claro">Segue a gente</p>
+        <h2 class="insta__titulo">Instagram da <span>GeP Lavanderia</span></h2>
       </div>
-      <div class="insta__grid">
-        <a class="insta__item" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><img src="assets/img/instagram/post-1.webp" alt="Post do Instagram da GeP Lavanderia" loading="lazy"></a>
-        <a class="insta__item" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><img src="assets/img/instagram/post-2.webp" alt="Post do Instagram da GeP Lavanderia" loading="lazy"></a>
-        <a class="insta__item" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><img src="assets/img/instagram/post-3.webp" alt="Post do Instagram da GeP Lavanderia" loading="lazy"></a>
-        <a class="insta__item" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><img src="assets/img/instagram/post-4.webp" alt="Post do Instagram da GeP Lavanderia" loading="lazy"></a>
-        <a class="insta__item" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><img src="assets/img/instagram/post-5.webp" alt="Post do Instagram da GeP Lavanderia" loading="lazy"></a>
-        <a class="insta__item" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><img src="assets/img/instagram/post-6.webp" alt="Post do Instagram da GeP Lavanderia" loading="lazy"></a>
+      <div class="insta__leque">
+        <a class="insta__item" data-x="-380" data-y="18" data-r="-4" style="--x:-380px;--y:18px;--r:-4deg;--w:150px;z-index:10" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><img src="assets/img/instagram/post-1.webp" alt="Post do Instagram da GeP Lavanderia" loading="lazy"></a>
+        <a class="insta__item" data-x="-228" data-y="38" data-r="-3" style="--x:-228px;--y:38px;--r:-3deg;--w:160px;z-index:20" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><img src="assets/img/instagram/post-2.webp" alt="Post do Instagram da GeP Lavanderia" loading="lazy"></a>
+        <a class="insta__item" data-x="-76" data-y="4" data-r="-2" style="--x:-76px;--y:4px;--r:-2deg;--w:180px;z-index:40" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><img src="assets/img/instagram/post-3.webp" alt="Post do Instagram da GeP Lavanderia" loading="lazy"></a>
+        <a class="insta__item" data-x="76" data-y="26" data-r="2" style="--x:76px;--y:26px;--r:2deg;--w:180px;z-index:40" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><img src="assets/img/instagram/post-4.webp" alt="Post do Instagram da GeP Lavanderia" loading="lazy"></a>
+        <a class="insta__item" data-x="228" data-y="46" data-r="3" style="--x:228px;--y:46px;--r:3deg;--w:160px;z-index:20" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><img src="assets/img/instagram/post-5.webp" alt="Post do Instagram da GeP Lavanderia" loading="lazy"></a>
+        <a class="insta__item" data-x="380" data-y="12" data-r="4" style="--x:380px;--y:12px;--r:4deg;--w:150px;z-index:10" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><img src="assets/img/instagram/post-6.webp" alt="Post do Instagram da GeP Lavanderia" loading="lazy"></a>
       </div>
       <div class="insta__cta">
-        <a class="btn btn--azul" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener">@geplavanderia no Instagram</a>
+        <a class="btn" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener">@geplavanderia no Instagram</a>
       </div>
     </div>
   </section>
+
+  <script>
+    // Leque do Instagram: entra em posição só quando a seção aparece na tela
+    // (não no carregamento da página, já que fica no fim). Sem JS ou com
+    // "reduzir movimento" ligado, os cards já nascem na posição final —
+    // troca de classe é só reforço visual, nunca requisito de layout.
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
+      var itensLeque = document.querySelectorAll(".insta__leque .insta__item");
+      itensLeque.forEach(function (item, i) {
+        item.classList.add("insta__item--entrando");
+        item.style.transitionDelay = (i * 0.09) + "s";
+      });
+      var observador = new IntersectionObserver(function (entradas) {
+        entradas.forEach(function (entrada) {
+          if (entrada.isIntersecting) {
+            entrada.target.classList.add("insta__leque--visivel");
+            observador.disconnect();
+          }
+        });
+      }, { threshold: 0.35 });
+      observador.observe(document.querySelector(".insta__leque"));
+    }
+  </script>
 
   <!-- ==================== CONTATO ==================== -->
   <section class="secao" id="contato">
