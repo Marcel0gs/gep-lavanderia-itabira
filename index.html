@@ -94,8 +94,15 @@
   <section class="palco">
     <div class="palco__trilho">
 
+      <!-- Fachada da loja, nítida e sem véu pesado: no exemplo que serviu de
+           referência o fundo aparece de verdade, é ele que dá profundidade
+           pro card recortado por cima. Versão vertical no celular, senão o
+           corte central come o letreiro inteiro. -->
       <div class="palco__fundo">
-        <img src="assets/img/hero-fundo.jpg" alt="Fachada iluminada da GeP Lavanderia Self Service, no Centro de Itabira" width="1085" height="817" fetchpriority="high">
+        <picture>
+          <source media="(max-width: 700px)" srcset="assets/img/hero-fundo-mobile.jpg">
+          <img src="assets/img/hero-fundo.jpg" alt="Fachada iluminada da GeP Lavanderia Self Service, no Centro de Itabira" width="1085" height="817" fetchpriority="high">
+        </picture>
       </div>
 
       <!-- Bolhas subindo: elemento gráfico recorrente da marca. Ficam atrás
@@ -111,41 +118,37 @@
         <div class="bolha-sobe" style="width:18px;height:18px;left:93%;animation-delay:.35s;--deriva:-16px"></div>
       </div>
 
-      <div class="palco__quadro">
-        <p class="palco__olho">🫧 Self service · Centro de Itabira</p>
+      <!-- O card que abre. Versão vertical no celular porque a horizontal,
+           cortada em tela estreita, perde a fileira de máquinas. -->
+      <picture class="palco__midia">
+        <source media="(max-width: 700px)" srcset="assets/img/hero-card-mobile.jpg">
+        <img src="assets/img/hero-card.jpg" alt="Salão da GeP Lavanderia: fileira de lavadoras e secadoras industriais, parede verde e mesa alta com cadeiras" width="1085" height="596" fetchpriority="high">
+      </picture>
 
-        <!-- O card que abre. Versão vertical no celular porque a horizontal,
-             cortada em tela estreita, perde a fileira de máquinas. -->
-        <picture class="palco__midia">
-          <source media="(max-width: 700px)" srcset="assets/img/hero-card-mobile.jpg">
-          <img src="assets/img/hero-card.jpg" alt="Salão da GeP Lavanderia: fileira de lavadoras e secadoras industriais, parede verde e mesa alta com cadeiras" width="1085" height="596" fetchpriority="high">
-        </picture>
-
-        <div class="palco__apoio">
-          <p class="palco__sub">
-            Máquinas industriais, produto de lavagem já incluso e ambiente
-            climatizado com wi-fi grátis e espaço kids.
-          </p>
-          <div class="palco__acoes">
-            <a class="btn" href="https://wa.me/5531990609491?text=Ol%C3%A1%21%20Vim%20pelo%20site%20e%20gostaria%20de%20saber%20mais." target="_blank" rel="noopener">Falar no WhatsApp</a>
-            <a class="btn btn--vazado" href="#contato">Ver localização</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Título por cima do card: as duas metades nascem empilhadas (lendo
-           como um H1 normal de duas linhas) e vão se afastando pros lados
-           conforme o card abre. -->
+      <!-- Título por cima do card. As duas metades nascem empilhadas — lendo
+           como um H1 normal de duas linhas — e se afastam só na horizontal,
+           mantendo o desnível de uma linha entre elas. É assim no exemplo:
+           elas não se alinham no meio, cada uma sai reto pro seu lado. -->
       <h1 class="palco__titulo">
         <span class="palco__meia palco__meia--esq">Lave e seque sua roupa</span>
         <span class="palco__meia palco__meia--dir">em até 60 minutos</span>
       </h1>
 
-      <!-- Só aparece no fim da animação, sobre a foto em tela cheia — pra o
-           quadro final ter pra onde levar o visitante, não morrer na foto. -->
+      <!-- Duas notas miúdas logo abaixo do card, uma pra cada lado. Viajam
+           junto com a metade de título correspondente e vão sendo cobertas
+           pelo card conforme ele cresce. -->
+      <p class="palco__nota palco__nota--esq">Self service no Centro de Itabira</p>
+      <p class="palco__nota palco__nota--dir">Role para entrar ↓</p>
+
+      <!-- Entra na reta final, sobre a foto em tela cheia. É aqui que moram
+           os botões agora: no quadro em que a lavanderia ocupa a tela toda,
+           não espremidos embaixo do card pequeno. -->
       <div class="palco__final">
         <p>Aberto todos os dias, das 05h às 00h</p>
-        <a class="btn" href="https://wa.me/5531990609491?text=Ol%C3%A1%21%20Vim%20pelo%20site%20e%20gostaria%20de%20saber%20mais." target="_blank" rel="noopener">Falar no WhatsApp</a>
+        <div class="palco__acoes">
+          <a class="btn" href="https://wa.me/5531990609491?text=Ol%C3%A1%21%20Vim%20pelo%20site%20e%20gostaria%20de%20saber%20mais." target="_blank" rel="noopener">Falar no WhatsApp</a>
+          <a class="btn btn--vazado" href="#contato">Ver localização</a>
+        </div>
       </div>
 
     </div>

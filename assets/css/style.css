@@ -176,21 +176,27 @@ section[id] { scroll-margin-top: 84px; }
 .btn--azul:hover { background: var(--azul-escuro); }
 
 /* --- hero que abre com o scroll ------------------------------------------------ */
-/* Uma variável só comanda tudo: --p vai de 0 (card pequeno sobre a fachada)
-   a 1 (foto do salão em tela cheia). O script no HTML atualiza --p conforme
-   o scroll; aqui embaixo cada propriedade é só uma interpolação linear entre
-   o valor de início e o de fim, no formato
+/* Uma variável só comanda tudo: --p vai de 0 (card pequeno recortado sobre a
+   fachada) a 1 (salão em tela cheia). O script no HTML atualiza --p conforme
+   o scroll; aqui cada propriedade é uma interpolação linear entre o valor de
+   início e o de fim, no formato
       calc(inicio * (1 - var(--p)) + fim * var(--p))
 
-   Estado padrão (sem JS ou com "reduzir movimento"): a seção é um hero comum
-   de altura fixa, --p fica em 0 e nada se mexe. A classe .palco--ativo, que
-   só o script adiciona, é o que transforma a seção em trilho alto + sticky. */
+   As proporções saíram de medição quadro a quadro do exemplo que o cliente
+   passou: card inicial ocupando ~25% da largura e ~44% da altura da tela,
+   fundo NÍTIDO (o véu escuro matava a profundidade — é o fundo que faz o
+   card parecer recortado por cima dele) e título grande, com as metades
+   saindo retas pros lados sem se realinharem no meio do caminho. */
 .palco {
   --p: 0;
-  --w0: 360px;   /* largura inicial do card */
-  --h0: 440px;   /* altura inicial do card  */
+  /* card no início. A altura sai da largura, não da altura da tela: preso a
+     vh, numa tela larga e baixa o card virava quase quadrado, e no exemplo
+     ele é claramente retrato (3:4). O teto em vh existe só pra não estourar
+     em tela curta. */
+  --w0: clamp(240px, 25vw, 400px);
+  --h0: min(calc(var(--w0) * 1.34), 62vh);
   position: relative;
-  height: min(88vh, 700px);
+  height: min(94vh, 760px);
   background: var(--azul-escuro);
   color: var(--branco);
 }
@@ -199,47 +205,32 @@ section[id] { scroll-margin-top: 84px; }
 .palco__trilho { position: relative; height: 100%; overflow: hidden; }
 .palco--ativo .palco__trilho { position: sticky; top: 0; height: 100vh; }
 
-/* fundo: fachada da loja. Vai fechando o zoom e escurecendo até o card
-   cobrir a tela inteira — some sem precisar de fade próprio. */
+/* fundo: fachada da loja, nítida. Só um degradê leve pra firmar o contraste
+   do texto, fechando um pouco conforme o card toma a tela. */
 .palco__fundo {
   position: absolute; inset: 0; z-index: 0;
-  transform: scale(calc(1.12 * (1 - var(--p)) + 1 * var(--p)));
+  transform: scale(calc(1.08 * (1 - var(--p)) + 1 * var(--p)));
   will-change: transform;
 }
+.palco__fundo picture { display: block; width: 100%; height: 100%; }
 .palco__fundo img { width: 100%; height: 100%; object-fit: cover; }
 .palco__fundo::after {
   content: ""; position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(16,42,82,.45) 0%, rgba(16,42,82,.8) 100%);
-  opacity: calc(.7 * (1 - var(--p)) + 1 * var(--p));
+  background: linear-gradient(180deg, rgba(16,42,82,.20) 0%, rgba(16,42,82,.55) 100%);
+  opacity: calc(.85 * (1 - var(--p)) + 1 * var(--p));
 }
 .palco__bolhas { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
 
-/* coluna central: olho em cima, card no meio, sub + CTA embaixo. Quando o
-   card cresce até 100% da altura, ele empurra olho e apoio pra fora do
-   trilho (que tem overflow:hidden) — a saída deles é consequência do
-   layout, não uma animação separada. */
-.palco__quadro {
-  position: absolute; inset: 0; z-index: 2;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 1.35rem;
-}
-.palco__olho, .palco__apoio, .palco__midia { flex: 0 0 auto; }
-
-.palco__olho {
-  display: inline-flex; align-items: center; gap: .5rem; margin: 0;
-  color: var(--branco); font-size: .78rem; font-weight: 700;
-  letter-spacing: .14em; text-transform: uppercase;
-  background: rgba(92,187,42,.28); border: 1px solid rgba(92,187,42,.5);
-  padding: .4rem .9rem; border-radius: 100px;
-  opacity: clamp(0, calc(1 - var(--p) * 6), 1);
-}
-
+/* o card que abre: centrado por transform, cresce de --w0/--h0 até 100% do
+   trilho. Sem container de layout no meio — assim o 100% é exatamente a tela. */
 .palco__midia {
-  display: block; overflow: hidden; position: relative;
+  position: absolute; top: 50%; left: 50%; z-index: 2;
+  display: block; overflow: hidden;
+  transform: translate(-50%, -50%);
   width:  calc(var(--w0) * (1 - var(--p)) + 100% * var(--p));
   height: calc(var(--h0) * (1 - var(--p)) + 100% * var(--p));
-  border-radius: calc(20px * (1 - var(--p)));
-  box-shadow: 0 24px 60px rgba(0, 0, 0, calc(.5 * (1 - var(--p))));
+  border-radius: calc(18px * (1 - var(--p)));
+  box-shadow: 0 26px 70px rgba(0, 0, 0, calc(.55 * (1 - var(--p))));
   will-change: width, height;
 }
 /* enquadramento acompanha a abertura: no card pequeno puxa pro maquinário
@@ -248,23 +239,15 @@ section[id] { scroll-margin-top: 84px; }
   width: 100%; height: 100%; object-fit: cover;
   object-position: calc(30% * (1 - var(--p)) + 50% * var(--p)) center;
 }
-/* véu sobre o card: forte no começo (pro título branco ler por cima) e
-   quase transparente no fim, quando a foto é o assunto. */
+/* véu sobre o card, só enquanto o título passa por cima dele */
 .palco__midia::after {
   content: ""; position: absolute; inset: 0;
-  background: rgba(16, 42, 82, .55);
-  opacity: calc(1 - var(--p) * .8);
+  background: rgba(16, 42, 82, .5);
+  opacity: calc(1 - var(--p));
 }
 
-.palco__apoio {
-  text-align: center; padding: 0 1.25rem; max-width: 46ch;
-  opacity: clamp(0, calc(1 - var(--p) * 6), 1);
-}
-.palco__sub { font-size: 1.05rem; color: #dce6f5; margin: 0 0 1.25rem; }
-.palco__acoes { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; }
-
-/* título: as duas metades nascem empilhadas e centralizadas (lê como um H1
-   normal de duas linhas) e vão pros lados opostos conforme o card abre. */
+/* título: as duas metades nascem empilhadas (lê como um H1 normal de duas
+   linhas) e se afastam só na horizontal, mantendo o desnível entre elas. */
 .palco__titulo {
   position: absolute; inset: 0; z-index: 3; margin: 0;
   display: grid; place-items: center;
@@ -273,18 +256,33 @@ section[id] { scroll-margin-top: 84px; }
 .palco__meia {
   grid-area: 1 / 1;
   color: var(--branco); white-space: nowrap;
-  font-size: clamp(1.4rem, 5vw, 3.1rem); font-weight: 800; letter-spacing: -.02em;
-  text-shadow: 0 2px 24px rgba(0, 0, 0, .45);
+  font-size: clamp(1.5rem, 5.2vw, 4.4rem);
+  font-weight: 800; letter-spacing: -.025em; line-height: 1.1;
+  text-shadow: 0 2px 30px rgba(0, 0, 0, .55);
   will-change: transform;
 }
-.palco__meia--esq {
-  transform: translate(calc(var(--p) * -62vw), calc((1 - var(--p)) * -.62em));
+.palco__meia--esq { transform: translate(calc(var(--p) * -85vw), -.62em); }
+.palco__meia--dir { transform: translate(calc(var(--p) *  85vw),  .62em); }
+
+/* notas miúdas logo abaixo do card, uma pra cada lado. Viajam junto com a
+   metade de título correspondente e ficam atrás do card (z-index 1), então
+   somem cobertas por ele conforme cresce. */
+.palco__nota {
+  position: absolute; left: 50%; z-index: 1; margin: 0;
+  top: calc(50% + var(--h0) / 2 + 1.2rem);
+  font-size: .92rem; font-weight: 600; color: #e6eefb;
+  white-space: nowrap; text-shadow: 0 2px 14px rgba(0, 0, 0, .6);
+  pointer-events: none;
 }
-.palco__meia--dir {
-  transform: translate(calc(var(--p) *  62vw), calc((1 - var(--p)) *  .62em));
+.palco__nota--esq { transform: translateX(calc(-50% + var(--p) * -85vw)); }
+.palco__nota--dir {
+  top: calc(50% + var(--h0) / 2 + 3.1rem);
+  font-size: .8rem; color: #b9cdea;
+  transform: translateX(calc(-50% + var(--p) * 85vw));
 }
 
-/* quadro final: entra só na reta final da animação, por cima da foto cheia */
+/* quadro final: entra na reta final, sobre a foto em tela cheia. Os botões
+   moram aqui — no quadro em que a lavanderia ocupa a tela toda. */
 .palco__final {
   position: absolute; z-index: 4; left: 0; right: 0;
   bottom: clamp(2.5rem, 9vh, 6rem);
@@ -294,30 +292,30 @@ section[id] { scroll-margin-top: 84px; }
 }
 .palco--fim .palco__final { pointer-events: auto; }
 .palco__final p {
-  margin: 0 0 1rem; font-weight: 700; color: var(--branco);
-  text-shadow: 0 2px 18px rgba(0, 0, 0, .5);
+  margin: 0 0 1.1rem; font-weight: 700; color: var(--branco);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, .55);
 }
-/* Estado parado (sem JS ou com "reduzir movimento"): vira um hero comum. Como
-   o header é fixo e cobre os primeiros 72px, o quadro ganha esse respiro em
-   cima — senão o olho nasce atrás do header. E o card inicial encolhe, porque
-   aqui a seção tem altura de hero, não de tela cheia, e precisa caber olho +
-   card + sub + dois botões sem cortar nada. */
-.palco:not(.palco--ativo) {
-  --h0: min(46vh, 380px);
-  height: min(94vh, 760px);
+.palco__acoes { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; }
+
+/* Estado parado: sem JS, ou com "reduzir movimento" ligado no sistema. (No
+   Windows isso vem de Configurações > Acessibilidade > Efeitos visuais >
+   Efeitos de animação; desligado lá, o Chrome reporta reduce e o script não
+   liga a animação.) Em vez de mostrar o card pequeno — que sem o movimento
+   fica sem sentido —, entrega direto o quadro final: foto em tela cheia,
+   título no meio e os botões embaixo. Hero comum, forte, sem scroll morto. */
+.palco:not(.palco--ativo) .palco__midia {
+  width: 100%; height: 100%; border-radius: 0; box-shadow: none;
 }
-.palco:not(.palco--ativo) .palco__quadro { padding-top: 72px; }
-.palco:not(.palco--ativo) .palco__titulo { padding-top: 72px; }
-.palco:not(.palco--ativo) .palco__final { display: none; }
+.palco:not(.palco--ativo) .palco__midia::after { opacity: .6; }
+.palco:not(.palco--ativo) .palco__nota { display: none; }
+.palco:not(.palco--ativo) .palco__final { opacity: 1; pointer-events: auto; }
 
 @media (max-width: 700px) {
-  /* card inicial mais baixo: com olho em cima e sub + dois botões embaixo,
-     48vh não sobrava respiro em tela de ~840px */
-  .palco { --w0: 72vw; --h0: 40vh; }
+  .palco { --w0: 68vw; }
   .palco--ativo { height: 190vh; }
-  .palco__quadro { gap: 1.1rem; }
-  .palco__sub { font-size: .98rem; margin-bottom: 1rem; }
-  .palco__meia { font-size: clamp(1.3rem, 6vw, 2rem); }
+  .palco__meia { font-size: clamp(1.25rem, 5.8vw, 1.8rem); }
+  .palco__nota { font-size: .8rem; }
+  .palco__nota--dir { font-size: .74rem; }
 }
 
 .acoes { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.5rem; }
