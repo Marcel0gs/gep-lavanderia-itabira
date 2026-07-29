@@ -6,6 +6,15 @@
 <title>Lavanderia Self Service em Itabira/MG | G&amp;P Lavanderia</title>
 <meta name="description" content="Lave e seque sua roupa em até 60 minutos na G&amp;P Lavanderia, self service no Centro de Itabira/MG. Ambiente climatizado, wi-fi grátis e cantinho das crianças. Aberto todos os dias, 05h às 00h.">
 <link rel="canonical" href="https://marcel0gs.github.io/gep-lavanderia-itabira/">
+
+<!-- A fachada é o maior elemento do primeiro quadro — é ela que o navegador
+     cronometra como LCP. Preload aqui em cima, ANTES da folha de estilo, faz o
+     download começar no primeiro byte do HTML em vez de esperar o CSS baixar e
+     o parser chegar no <picture>. Uma linha por largura, com `media` igual ao
+     do <source> lá embaixo, senão o celular baixa as duas. -->
+<link rel="preload" as="image" href="assets/img/hero-fundo-mobile.jpg" media="(max-width: 700px)" fetchpriority="high">
+<link rel="preload" as="image" href="assets/img/hero-fundo.jpg" media="(min-width: 701px)" fetchpriority="high">
+
 <link rel="stylesheet" href="assets/css/style.css">
 
 <script type="application/ld+json">
@@ -126,7 +135,10 @@
            aberto perderia quase metade da largura e sobraria bancada. -->
       <picture class="palco__midia">
         <source media="(max-width: 700px)" srcset="assets/img/hero-card-mobile.jpg">
-        <img src="assets/img/hero-card.jpg" alt="Salão da G&amp;P Lavanderia: fileira de lavadoras e secadoras industriais na parede verde, mesinha do cantinho das crianças e piso geométrico" width="1402" height="1122" fetchpriority="high">
+        <!-- Sem fetchpriority: duas imagens "high" no mesmo quadro disputam a
+             banda e atrasam as duas. A fachada (que é o LCP) tem o preload;
+             o card entra logo atrás, em prioridade normal. -->
+        <img src="assets/img/hero-card.jpg" alt="Salão da G&amp;P Lavanderia: fileira de lavadoras e secadoras industriais na parede verde, mesinha do cantinho das crianças e piso geométrico" width="1402" height="1122">
       </picture>
 
       <!-- Título por cima do card. As duas metades nascem empilhadas — lendo
@@ -179,12 +191,27 @@
       // nunca pediu nada disso.
       palco.classList.add("palco--ativo");
 
-      var agendado = false;
+      // As duas medidas do percurso (onde a seção começa e quanto scroll ela
+      // prende) só mudam quando a janela muda de tamanho. Ficam em cache: ler
+      // offsetHeight/getBoundingClientRect a cada frame obriga o navegador a
+      // recalcular o layout na hora, bem depois de já ter escrito --p no frame
+      // anterior — é o vaivém que engasga o scroll no celular. Com o cache
+      // sobra só window.scrollY por frame, que não custa layout nenhum.
+      var topo = 0, curso = 0;
+      function medir() {
+        topo = palco.getBoundingClientRect().top + window.scrollY;
+        curso = palco.offsetHeight - window.innerHeight; // scroll preso
+      }
+
+      var agendado = false, ultimo = -1;
       function atualizar() {
         agendado = false;
-        var curso = palco.offsetHeight - window.innerHeight; // scroll preso
-        var andado = -palco.getBoundingClientRect().top;
-        var p = curso > 0 ? Math.min(1, Math.max(0, andado / curso)) : 0;
+        var p = curso > 0 ? Math.min(1, Math.max(0, (window.scrollY - topo) / curso)) : 0;
+        // Descarta frame que não mudaria nada na tela. As pontas (0 e 1) passam
+        // sempre, senão o efeito para em 0,998 e não fecha.
+        if (p === ultimo) return;
+        if (p !== 0 && p !== 1 && Math.abs(p - ultimo) < 0.002) return;
+        ultimo = p;
         palco.style.setProperty("--p", p.toFixed(4));
         palco.classList.toggle("palco--fim", p > 0.78);
       }
@@ -193,7 +220,8 @@
       }
 
       window.addEventListener("scroll", agendar, { passive: true });
-      window.addEventListener("resize", agendar);
+      window.addEventListener("resize", function () { medir(); agendar(); });
+      medir();
       atualizar();
     })();
   </script>
@@ -441,7 +469,7 @@
   <section class="secao secao--creme">
     <div class="wrap espaco">
       <div class="espaco__img">
-        <img src="assets/img/ambiente-salao.webp" alt="Fileira de lavadoras e secadoras industriais da G&amp;P Lavanderia" loading="lazy">
+        <img src="assets/img/ambiente-salao.webp" alt="Fileira de lavadoras e secadoras industriais da G&amp;P Lavanderia" width="1440" height="1800" loading="lazy" decoding="async">
       </div>
       <div>
         <p class="secao__olho">Conheça o espaço</p>
@@ -543,12 +571,12 @@
            vivem no CSS, então o mesmo leque encolhe pro celular mudando dois
            valores — não vira carrossel nem troca de layout. -->
       <div class="insta__leque">
-        <a class="insta__item" style="--i:-2.5;--dy:18;--r:-4deg;--n:.84;z-index:10" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><img src="assets/img/instagram/post-1.webp" alt="Post do Instagram da G&amp;P Lavanderia" loading="lazy"></a>
-        <a class="insta__item" style="--i:-1.5;--dy:38;--r:-3deg;--n:.89;z-index:20" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><img src="assets/img/instagram/post-2.webp" alt="Post do Instagram da G&amp;P Lavanderia" loading="lazy"></a>
-        <a class="insta__item" style="--i:-.5;--dy:4;--r:-2deg;--n:1;z-index:40" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><img src="assets/img/instagram/post-3.webp" alt="Post do Instagram da G&amp;P Lavanderia" loading="lazy"></a>
-        <a class="insta__item" style="--i:.5;--dy:26;--r:2deg;--n:1;z-index:40" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><img src="assets/img/instagram/post-4.webp" alt="Post do Instagram da G&amp;P Lavanderia" loading="lazy"></a>
-        <a class="insta__item" style="--i:1.5;--dy:46;--r:3deg;--n:.89;z-index:20" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><img src="assets/img/instagram/post-5.webp" alt="Post do Instagram da G&amp;P Lavanderia" loading="lazy"></a>
-        <a class="insta__item" style="--i:2.5;--dy:12;--r:4deg;--n:.84;z-index:10" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><img src="assets/img/instagram/post-6.webp" alt="Post do Instagram da G&amp;P Lavanderia" loading="lazy"></a>
+        <a class="insta__item" style="--i:-2.5;--dy:18;--r:-4deg;--n:.84;z-index:10" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><img src="assets/img/instagram/post-1.webp" alt="Post do Instagram da G&amp;P Lavanderia" width="1440" height="1800" loading="lazy" decoding="async"></a>
+        <a class="insta__item" style="--i:-1.5;--dy:38;--r:-3deg;--n:.89;z-index:20" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><img src="assets/img/instagram/post-2.webp" alt="Post do Instagram da G&amp;P Lavanderia" width="1080" height="1350" loading="lazy" decoding="async"></a>
+        <a class="insta__item" style="--i:-.5;--dy:4;--r:-2deg;--n:1;z-index:40" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><img src="assets/img/instagram/post-3.webp" alt="Post do Instagram da G&amp;P Lavanderia" width="1440" height="1800" loading="lazy" decoding="async"></a>
+        <a class="insta__item" style="--i:.5;--dy:26;--r:2deg;--n:1;z-index:40" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><img src="assets/img/instagram/post-4.webp" alt="Post do Instagram da G&amp;P Lavanderia" width="1440" height="1800" loading="lazy" decoding="async"></a>
+        <a class="insta__item" style="--i:1.5;--dy:46;--r:3deg;--n:.89;z-index:20" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><img src="assets/img/instagram/post-5.webp" alt="Post do Instagram da G&amp;P Lavanderia" width="1440" height="1800" loading="lazy" decoding="async"></a>
+        <a class="insta__item" style="--i:2.5;--dy:12;--r:4deg;--n:.84;z-index:10" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><img src="assets/img/instagram/post-6.webp" alt="Post do Instagram da G&amp;P Lavanderia" width="1440" height="1800" loading="lazy" decoding="async"></a>
       </div>
       <div class="insta__cta">
         <a class="btn" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener">@geplavanderia no Instagram</a>

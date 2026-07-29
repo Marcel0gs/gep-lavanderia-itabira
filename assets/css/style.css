@@ -235,7 +235,13 @@ section[id] { scroll-margin-top: 84px; }
   height: calc(var(--h0) * (1 - var(--p)) + 100% * var(--p));
   border-radius: calc(18px * (1 - var(--p)));
   box-shadow: 0 26px 70px rgba(0, 0, 0, calc(.55 * (1 - var(--p))));
-  will-change: width, height;
+  /* `contain` no lugar de `will-change: width, height`: will-change só ajuda em
+     propriedade que o compositor sabe animar sozinho (transform, opacity) —
+     em width/height ele não promove camada nenhuma e ainda reserva memória à
+     toa. Já `contain` avisa que nada fora deste elemento depende do tamanho
+     dele, então o recálculo de cada frame para aqui em vez de subir a árvore.
+     É o que segura a fluidez no celular, onde esse recálculo dói. */
+  contain: layout paint;
 }
 /* O quadro muda de forma no meio do caminho — retrato no card pequeno,
    paisagem em tela cheia —, então o corte troca de eixo: primeiro come as
