@@ -97,6 +97,18 @@
   <symbol id="i-pin" viewBox="0 0 24 24">
     <path d="M12 2c-3.9 0-7 3.1-7 7 0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/>
   </symbol>
+  <!-- Ícones do rodapé, no mesmo desenho dos outros sites da casa (Realce,
+       Larissa): traço único, viewBox 24, `fill` herdado de currentColor pra
+       trocar de cor junto com o link. -->
+  <symbol id="i-insta" viewBox="0 0 24 24">
+    <path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41 1.27-.06 1.65-.07 4.85-.07Zm0 5.68a4.16 4.16 0 1 0 0 8.32 4.16 4.16 0 0 0 0-8.32Zm0 6.86a2.7 2.7 0 1 1 0-5.4 2.7 2.7 0 0 1 0 5.4Zm5.3-7.02a.97.97 0 1 1-1.94 0 .97.97 0 0 1 1.94 0Z"/>
+  </symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24">
+    <path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1s-.8 1-.9 1.2c-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5 0-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.5-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5 4.4.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3ZM12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.6 0-3.2-.4-4.5-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Z"/>
+  </symbol>
+  <symbol id="i-relogio" viewBox="0 0 24 24">
+    <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16Zm.9-12.6h-1.8v5.2l4.4 2.7.9-1.5-3.5-2.1V7.4Z"/>
+  </symbol>
 </svg>
 
 <header class="topo">
@@ -459,6 +471,34 @@
         <p class="secao__olho">Quem já lavou aqui</p>
         <h2>Avaliações no Google</h2>
       </div>
+      <!-- ===== placar que conta =====
+           Os números sobem de 0 até o valor real e as estrelas se preenchem da
+           esquerda pra direita quando a seção entra na tela. Modelo trazido da
+           Realce Odontologia.
+
+           ⚠️ O VALOR FINAL ESTÁ ESCRITO NO HTML, não só no `data-alvo` — e é
+           isso que faz a animação ser segura. Sem JS (ou com "reduzir
+           movimento" ligado) a pessoa lê "5,0" e "23" prontos, e as estrelas
+           nascem cheias pela regra base do CSS. Animação que precisa de script
+           pra o número aparecer é animação que esconde prova social de quem
+           mais precisa dela.
+
+           ⚠️ A LARGURA DAS ESTRELAS CHEIAS É 100%, e não 98% como na Realce:
+           lá a nota é 4,9 e os 98% deixam a quinta estrela quase inteira, que é
+           o que 4,9 significa. Aqui a nota é 5,0 redonda — cinco estrelas
+           inteiras. **Mudou a nota, muda essa largura junto.** -->
+      <div class="placar" data-placar>
+        <div class="placar__nota" data-conta data-alvo="5.0" data-casas="1">5,0</div>
+        <div>
+          <span class="estrelas-med" data-estrelas aria-hidden="true">
+            <span class="vazias">★★★★★</span>
+            <span class="cheias">★★★★★</span>
+          </span>
+          <span class="placar__contagem">Média de <b data-conta data-alvo="23">23</b> avaliações no Google — nenhuma abaixo de cinco</span>
+        </div>
+        <span class="placar__fonte">Fonte: Google · agosto de 2026</span>
+      </div>
+
       <div class="depos">
         <article class="depo">
           <div class="depo__estrelas" aria-label="5 de 5 estrelas">★★★★★</div>
@@ -606,32 +646,65 @@
 
 </main>
 
+<!-- ===== rodapé =====
+     Quatro colunas em vez de três, e cada uma com um trabalho: quem é (marca,
+     frase, ícones sociais), o que faz, como falar, e pra onde ir na página.
+
+     Os ícones sociais são os mesmos do Realce e da Larissa — bolinha de 48px,
+     traço do sprite, `currentColor`. Os 48px não são estética: link com área de
+     toque menor que isso reprova no Lighthouse em "tap targets are not sized
+     appropriately". Mesma razão do `min-height` nos itens da lista. -->
 <footer class="rodape">
   <div class="wrap">
     <div class="rodape__grid">
       <div>
         <span class="marca__texto"><span>G</span><b>&amp;</b><span>P</span></span>
-        <p style="margin-top:1rem">
-          Lavanderia self service no Centro de Itabira/MG.
+        <span class="marca__sub">Lavanderia Self Service</span>
+        <p class="rodape__frase">
+          Lavagem e secagem em até 60 minutos, você mesmo, no Centro de
+          Itabira/MG. Aberto todos os dias.
         </p>
+        <div class="sociais">
+          <a class="social" href="https://wa.me/5531990609491?text=Ol%C3%A1%21%20Vim%20pelo%20site%20e%20gostaria%20de%20saber%20mais." target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
+            <svg aria-hidden="true"><use href="#i-zap"/></svg>
+          </a>
+          <a class="social" href="https://instagram.com/geplavanderia" target="_blank" rel="noopener" aria-label="Instagram da lavanderia, @geplavanderia">
+            <svg aria-hidden="true"><use href="#i-insta"/></svg>
+          </a>
+          <a class="social" href="https://www.google.com/maps/search/?api=1&amp;query=Rua+Irm%C3%A3os+D%27Caux%2C+05%2C+Loja+102%2C+Centro%2C+Itabira+-+MG%2C+35900-026" target="_blank" rel="noopener" aria-label="Como chegar, no Google Maps">
+            <svg aria-hidden="true"><use href="#i-pin"/></svg>
+          </a>
+        </div>
       </div>
       <div>
         <h3>Serviços</h3>
-        <ul>
+        <ul class="rodape__lista">
           <li><a href="#servicos">Lavagem e secagem expressa</a></li>
           <li><a href="#servicos">Edredons e cobertores</a></li>
-          <li><a href="#diferenciais">Diferenciais</a></li>
+          <li><a href="#precos">Preços</a></li>
         </ul>
       </div>
       <div>
         <h3>Contato</h3>
-        <ul>
-          <li><a href="https://wa.me/5531990609491" target="_blank" rel="noopener">(31) 9 9060-9491</a></li>
-          <li><a href="https://instagram.com/geplavanderia" target="_blank" rel="noopener">@geplavanderia</a></li>
+        <ul class="rodape__lista">
+          <li><a href="https://wa.me/5531990609491?text=Ol%C3%A1%21%20Vim%20pelo%20site%20e%20gostaria%20de%20saber%20mais." target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-zap"/></svg>(31) 9 9060-9491</a></li>
+          <li><a href="https://instagram.com/geplavanderia" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-insta"/></svg>@geplavanderia</a></li>
+          <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Rua+Irm%C3%A3os+D%27Caux%2C+05%2C+Loja+102%2C+Centro%2C+Itabira+-+MG%2C+35900-026" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-pin"/></svg>R. Irmãos D'Caux, 05 — Loja 102, Centro</a></li>
+          <li class="rodape__horario"><svg aria-hidden="true"><use href="#i-relogio"/></svg>Todos os dias, das 05h às 00h</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Navegue</h3>
+        <ul class="rodape__lista">
+          <li><a href="#diferenciais">Diferenciais</a></li>
+          <li><a href="#servicos">Serviços</a></li>
+          <li><a href="#precos">Preços</a></li>
+          <li><a href="#avaliacoes">Avaliações</a></li>
+          <li><a href="#contato">Onde fica</a></li>
         </ul>
       </div>
     </div>
-    <p class="rodape__fim">© 2026 G&amp;P Lavanderia Self Service</p>
+    <p class="rodape__fim">© 2026 G&amp;P Lavanderia Self Service · Rua Irmãos D'Caux, 05 — Loja 102, Centro, Itabira/MG, 35900-026</p>
   </div>
 </footer>
 
@@ -662,6 +735,61 @@
       if (!agendado) { agendado = true; requestAnimationFrame(aplicar); }
     }, { passive: true });
     aplicar();   // recarregar no meio da página já nasce com o estado certo
+  })();
+</script>
+
+<script>
+  // Placar do Google: os números sobem de 0 até o valor real e as estrelas se
+  // preenchem, uma vez só, quando a seção de avaliações entra na tela.
+  //
+  // ⚠️ Nada aqui é requisito de layout. Os valores finais já estão escritos no
+  // HTML e as estrelas cheias nascem em width:100% na regra base do CSS — o
+  // que a classe `js` faz é zerá-las pra depois preencher. Script quebrado,
+  // navegador antigo ou "reduzir movimento" ligado: a pessoa lê 5,0 e 23
+  // prontos, que é o que interessa.
+  (function () {
+    var placar = document.querySelector("[data-placar]");
+    if (!placar) return;
+
+    var semMovimento = window.matchMedia
+      && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function formata(v, casas) {
+      return casas ? v.toFixed(casas).replace(".", ",") : String(Math.round(v));
+    }
+
+    function conta(el) {
+      var alvo  = parseFloat(el.getAttribute("data-alvo"));
+      var casas = parseInt(el.getAttribute("data-casas") || "0", 10);
+      if (semMovimento || !window.requestAnimationFrame) {
+        el.textContent = formata(alvo, casas);
+        return;
+      }
+      var t0 = null, dur = 1500;
+      requestAnimationFrame(function passo(t) {
+        if (t0 === null) t0 = t;
+        var p = Math.min((t - t0) / dur, 1);
+        var e = 1 - Math.pow(1 - p, 3);   // easeOutCubic: sai rápido e desacelera
+        el.textContent = formata(alvo * e, casas);
+        if (p < 1) requestAnimationFrame(passo);
+      });
+    }
+
+    function dispara() {
+      Array.prototype.forEach.call(placar.querySelectorAll("[data-conta]"), conta);
+      var est = placar.querySelector("[data-estrelas]");
+      if (est) est.classList.add("contou");
+    }
+
+    // Sem IntersectionObserver, dispara na hora: pior sincronizado (pode
+    // acontecer fora da tela), mas nunca deixa o placar zerado.
+    if (!("IntersectionObserver" in window)) { dispara(); return; }
+    var obs = new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (e) {
+        if (e.isIntersecting) { dispara(); obs.disconnect(); }
+      });
+    }, { threshold: 0.35 });
+    obs.observe(placar);
   })();
 </script>
 </body>

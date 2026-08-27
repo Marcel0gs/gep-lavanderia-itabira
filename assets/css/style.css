@@ -658,6 +658,55 @@ section[id] { scroll-margin-top: 84px; }
 .espaco__lista li { display: flex; align-items: flex-start; gap: .8rem; }
 .espaco__lista svg { width: 24px; height: 24px; flex-shrink: 0; color: var(--verde-escuro); margin-top: 2px; }
 
+/* --- placar do Google (número que conta + estrelas que preenchem) --------- */
+/* 5,0 em 23 avaliações é o argumento verificável da página: não depende de
+   quem lê acreditar em elogio. Por isso ele vem ANTES dos seis depoimentos.
+
+   ⚠️ A REGRA DE OURO DESTA ANIMAÇÃO: sem JS a prova social continua inteira.
+   Os números finais estão escritos no HTML e as estrelas cheias nascem em
+   `width:100%` na regra base. Só quando a classe `js` existe é que elas voltam
+   pra zero e ganham a transição. Animação que precisa de script pra o número
+   aparecer é animação que esconde justamente o que mais convence. */
+.placar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 1.1rem 2.2rem;
+  padding: 1.5rem 1.7rem; margin-bottom: 2rem;
+  background: var(--branco); border: 1px solid var(--borda);
+  border-radius: var(--raio); box-shadow: var(--sombra);
+}
+/* `tabular-nums` não é detalhe: sem ele os algarismos têm larguras diferentes e
+   o bloco inteiro treme da esquerda pra direita enquanto o número sobe. */
+.placar__nota {
+  font-size: clamp(2.6rem, 7vw, 3.4rem); line-height: 1; font-weight: 800;
+  letter-spacing: -.03em; color: var(--azul); font-variant-numeric: tabular-nums;
+}
+.placar__contagem { display: block; color: var(--cinza); font-size: .92rem; margin-top: .4rem; }
+.placar__contagem b { color: var(--azul-escuro); font-variant-numeric: tabular-nums; }
+.placar__fonte { margin-left: auto; font-size: .82rem; color: var(--cinza); }
+@media (max-width: 560px) {
+  /* No celular o "Fonte: Google" empurrado pela direita cai sozinho numa linha
+     torta. Solto do `margin-left:auto`, ele vira a última linha do bloco. */
+  .placar__fonte { margin-left: 0; }
+}
+
+/* As estrelas são duas camadas do mesmo glifo: a de baixo apagada, a de cima
+   dourada e recortada por largura. Animar essa largura de 0 a 100% "preenche"
+   as cinco. Sem imagem, sem SVG, sem biblioteca.
+
+   ⚠️ 100% porque a nota é 5,0 redonda. Na Realce são 98%, que é o que deixa a
+   quinta estrela quase inteira pra representar 4,9. **Mudou a nota, muda esta
+   largura junto** — nos DOIS lugares abaixo. */
+.estrelas-med { position: relative; display: inline-block; line-height: 1; font-size: 1.3rem; letter-spacing: .12em; }
+.estrelas-med span { display: block; white-space: nowrap; }
+.estrelas-med .vazias { color: #d7e0ee; }
+.estrelas-med .cheias { position: absolute; left: 0; top: 0; overflow: hidden; color: #ffc53d; width: 100%; }
+.js .estrelas-med .cheias { width: 0; transition: width 1.5s cubic-bezier(.16,1,.3,1) .15s; }
+.js .estrelas-med.contou .cheias { width: 100%; }
+/* Quem pediu menos movimento recebe o quadro final direto. O contador dos
+   números tem a trava equivalente no script. */
+@media (prefers-reduced-motion: reduce) {
+  .js .estrelas-med .cheias { width: 100%; transition: none; }
+}
+
 /* --- depoimentos ------------------------------------------------------------------------- */
 .depos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
 @media (max-width: 940px) { .depos { grid-template-columns: repeat(2, 1fr); } }
@@ -755,16 +804,60 @@ section[id] { scroll-margin-top: 84px; }
 .mapa iframe { display: block; width: 100%; height: 100%; min-height: 340px; border: 0; }
 
 /* --- rodapé ---------------------------------------------------------------------------------- */
-.rodape { background: var(--azul-escuro); color: #b9c8e2; padding: 3rem 0 2rem; font-size: .93rem; }
+/* Quatro colunas: marca, serviços, contato, navegação. A primeira é mais larga
+   porque carrega a frase e os ícones sociais; as outras três são listas curtas.
+
+   ⚠️ A QUEBRA É EM DOIS PASSOS, e não direto pra uma coluna. Em 900px vira 2x2
+   (marca e serviços em cima, contato e navegação embaixo), e só abaixo de 560px
+   vira coluna única. Indo direto de quatro pra uma, o rodapé virava uma tira de
+   ~700px de altura que a pessoa tem que rolar inteira pra chegar no fim. */
+.rodape { background: var(--azul-escuro); color: #b9c8e2; padding: 3.2rem 0 2rem; font-size: .93rem; }
 .rodape a { color: #cfe0f7; }
-.rodape__grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 2rem; }
-@media (max-width: 760px) { .rodape__grid { grid-template-columns: 1fr; } }
+.rodape__grid { display: grid; grid-template-columns: 1.5fr 1fr 1.2fr 1fr; gap: 2.4rem 2rem; }
+@media (max-width: 900px) { .rodape__grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .rodape__grid { grid-template-columns: 1fr; gap: 2rem; } }
 .rodape h3 { color: var(--branco); font-size: .82rem; text-transform: uppercase; letter-spacing: .12em; }
-.rodape ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
-.rodape ul a { text-decoration: none; }
-.rodape ul a:hover { text-decoration: underline; }
-.rodape .marca__texto { color: var(--branco); }
+/* ⚠️ O `span` no seletor é obrigatório. A regra base `.marca__texto
+   span:first-of-type` pinta o "G" de azul-marinho pro cabeçalho branco, e ela
+   tem especificidade maior que `.rodape .marca__texto` — resultado: no rodapé
+   azul-escuro o G sumia, e a marca lia "&P". Bug que veio do rodapé antigo e
+   só apareceu em print. */
+.rodape .marca__texto, .rodape .marca__texto span { color: var(--branco); }
+.rodape .marca__texto { font-size: 1.5rem; }
 .rodape .marca__texto b { color: var(--verde); }
+.rodape .marca__sub { color: #8fa6c9; }
+.rodape__frase { margin: 1rem 0 0; max-width: 34ch; color: #a9bcd9; }
+
+/* Lista com ícone: o `min-height` de 44px existe pelo Lighthouse, não pelo
+   desenho — link de rodapé com 22px de altura reprova em "tap targets are not
+   sized appropriately". O `align-items:flex-start` + o `margin-top` do ícone
+   seguram o alinhamento quando o texto quebra em duas linhas (o endereço
+   quebra em quase todo celular). */
+.rodape__lista { list-style: none; margin: 0; padding: 0; display: grid; gap: .35rem; }
+.rodape__lista li { display: flex; }
+.rodape__lista a,
+.rodape__horario {
+  display: flex; align-items: flex-start; gap: .6rem; min-height: 44px;
+  padding: .5rem 0; text-decoration: none; line-height: 1.4;
+}
+.rodape__lista a:hover { text-decoration: underline; color: var(--branco); }
+.rodape__lista svg { width: 17px; height: 17px; flex: none; fill: currentColor; margin-top: 2px; }
+.rodape__horario { color: #a9bcd9; }
+
+/* Ícones sociais: bolinha de 48px, mesmo desenho do Realce e da Larissa. O
+   hover vira verde da marca com texto escuro — é a única cor forte do rodapé,
+   então ela marca o que é clicável de verdade. */
+.sociais { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.4rem; }
+.social {
+  width: 48px; height: 48px; border-radius: 50%;
+  display: grid; place-items: center; color: #cfe0f7;
+  background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.16);
+  transition: background .18s, border-color .18s, color .18s, transform .18s;
+}
+.social:hover { background: var(--verde); border-color: var(--verde); color: var(--branco); transform: translateY(-2px); }
+.social:focus-visible { outline: 2px solid var(--verde); outline-offset: 3px; }
+.social svg { width: 21px; height: 21px; fill: currentColor; }
+
 .rodape__fim { border-top: 1px solid #24406e; margin-top: 2.5rem; padding-top: 1.5rem; font-size: .85rem; color: #90a3c4; }
 
 /* --- botão flutuante de WhatsApp ---------------------------------------------------------------- */
