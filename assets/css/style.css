@@ -19,6 +19,12 @@
   --borda:       #dde5f2;
   --zap:         #25d366;
 
+  /* Altura da barra do topo. Vive numa variável porque o hero precisa dela
+     DUAS vezes: uma pra subir por baixo da barra (margem negativa) e outra pra
+     devolver o espaço por dentro (padding-top). Mexeu no min-height do
+     .topo__inner, mexe aqui junto — senão o título nasce coberto pela logo. */
+  --topo-h: 72px;
+
   --largura: 1120px;
   --raio: 14px;
   --sombra: 0 1px 3px rgba(16, 42, 82, .08), 0 10px 28px rgba(16, 42, 82, .10);
@@ -36,8 +42,8 @@ body {
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   /* `clip` em vez de `hidden`: overflow-x:hidden no body transforma o body
-     num container de scroll e quebra o position:sticky do hero. `clip` corta
-     igual sem criar container. A linha `hidden` fica como reserva pra
+     num container de scroll e quebra o position:sticky da barra do topo.
+     `clip` corta igual sem criar container. A linha `hidden` fica como reserva pra
      navegador antigo que não conhece `clip`. */
   overflow-x: hidden;
   overflow-x: clip;
@@ -135,24 +141,78 @@ section[id] { scroll-margin-top: 84px; }
 @keyframes letreiro { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
 /* --- cabeçalho -------------------------------------------------------------- */
+/* ============ A BARRA FICA INVISÍVEL EM CIMA DA FACHADA ============
+   A foto do hero sobe por baixo do topo e ocupa a tela inteira, então a barra
+   não pode ter fundo enquanto estiver ali. Depois que a pessoa rola 24px, o
+   branco volta.
+
+   ⚠️ O ESTADO PADRÃO É O BRANCO, NÃO O TRANSPARENTE — e é de propósito. Quem
+   entra sem JS (script com erro, leitor antigo) recebe a barra branca desde o
+   primeiro pixel: feia sobre a foto, mas legível. Se o padrão fosse
+   transparente, o mesmo visitante ficaria com logo branca sobre a placa branca
+   da fachada e menu invisível. Por isso o transparente está preso em
+   `.js .topo`, que só existe quando o script do <head> rodou, e o branco volta
+   com `.topo--rolado`.
+
+   ⚠️ O `&` CONTINUA VERDE nos dois estados, de propósito: é o único pedaço de
+   cor da marca que sobrevive na barra transparente, e o verde da fachada logo
+   atrás é o mesmo. Só o G, o P e a linha miúda viram branco. */
 .topo {
   position: sticky; top: 0; z-index: 50;
   background: rgba(255,255,255,.94); backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--borda);
+  transition: background .28s ease, border-color .28s ease;
 }
-.topo__inner { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; min-height: 72px; }
+.js .topo { background: transparent; backdrop-filter: none; border-bottom-color: transparent; }
+.js .topo--rolado {
+  background: rgba(255,255,255,.94); backdrop-filter: blur(8px);
+  border-bottom-color: var(--borda);
+}
+/* ⚠️ Mexeu neste min-height, mexe no --topo-h junto — o hero usa a variável
+   duas vezes (margem negativa pra subir por baixo da barra e padding pra
+   devolver o espaço por dentro). Fora de sincronia, o título nasce coberto. */
+.topo__inner { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; min-height: var(--topo-h); }
 .marca { display: flex; align-items: center; gap: .6rem; text-decoration: none; }
-.marca__icone { width: 34px; height: 34px; flex-shrink: 0; }
-.marca__texto { font-size: 1.35rem; font-weight: 800; letter-spacing: -.02em; }
+/* As duas versões do ícone empilhadas no mesmo espaço, trocando por opacidade.
+   Ver o comentário do sprite no HTML: recolorir a original por CSS não dá,
+   porque <use> monta shadow tree. */
+.marca__par { position: relative; display: block; width: 34px; height: 34px; flex-shrink: 0; }
+.marca__icone { display: block; width: 34px; height: 34px; transition: opacity .28s ease; }
+.marca__icone--branco {
+  position: absolute; inset: 0; opacity: 0;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,.55));
+}
+.marca__texto { font-size: 1.35rem; font-weight: 800; letter-spacing: -.02em; transition: color .28s ease; }
 .marca__texto b { color: var(--verde); }
+.marca__texto span { transition: color .28s ease; }
 .marca__texto span:first-of-type { color: var(--azul); }
 .marca__sub {
   display: block; font-size: .48rem; letter-spacing: .24em; font-weight: 700;
   color: var(--cinza); text-transform: uppercase; margin-top: -3px;
+  transition: color .28s ease;
 }
 .nav { display: flex; align-items: center; gap: 1.75rem; }
-.nav a:not(.btn) { color: var(--azul-escuro); text-decoration: none; font-size: .95rem; font-weight: 600; }
+.nav a:not(.btn) {
+  color: var(--azul-escuro); text-decoration: none; font-size: .95rem; font-weight: 600;
+  transition: color .28s ease;
+}
 .nav a:not(.btn):hover { color: var(--verde-escuro); }
+
+/* --- barra sobre a foto: ordem importa ---------------------------------------
+   A regra do ícone branco tem que vir DEPOIS da que apaga os dois: as duas
+   têm a mesma especificidade (4 classes), e nesse empate ganha a última. */
+.js .topo:not(.topo--rolado) .marca__icone { opacity: 0; }
+.js .topo:not(.topo--rolado) .marca__icone--branco { opacity: 1; }
+.js .topo:not(.topo--rolado) .marca__texto,
+.js .topo:not(.topo--rolado) .marca__texto span,
+.js .topo:not(.topo--rolado) .marca__sub { color: var(--branco); }
+.js .topo:not(.topo--rolado) .marca { text-shadow: 0 1px 3px rgba(0,0,0,.6), 0 2px 14px rgba(0,0,0,.45); }
+.js .topo:not(.topo--rolado) .nav a:not(.btn) {
+  color: rgba(255,255,255,.94); text-shadow: 0 1px 10px rgba(0,0,0,.55);
+}
+.js .topo:not(.topo--rolado) .nav a:not(.btn):hover { color: var(--branco); }
+.js .topo:not(.topo--rolado) .topo__inner .btn { box-shadow: 0 6px 22px rgba(0,0,0,.32); }
+
 @media (max-width: 860px) { .nav__links { display: none; } }
 @media (max-width: 430px) {
   .wrap { padding: 0 1.15rem; }
@@ -187,218 +247,243 @@ section[id] { scroll-margin-top: 84px; }
 .btn--azul { background: var(--azul); border-color: var(--azul); }
 .btn--azul:hover { background: var(--azul-escuro); }
 
-/* --- hero que abre com o scroll ------------------------------------------------ */
-/* Uma variável só comanda tudo: --p vai de 0 (card pequeno recortado sobre a
-   fachada) a 1 (salão em tela cheia). O script no HTML atualiza --p conforme
-   o scroll; aqui cada propriedade é uma interpolação linear entre o valor de
-   início e o de fim, no formato
-      calc(inicio * (1 - var(--p)) + fim * var(--p))
+/* --- hero: fachada em tela cheia, texto embaixo à esquerda ------------------ */
+/* Desenho trazido da Realce Odontologia em 27/08/2026. Foto ocupando a tela,
+   véu por cima, texto embaixo — parado, sem percurso de rolagem, sem JS
+   próprio. A primeira tela já é a tela final: a pessoa chega, lê a promessa,
+   vê o 5,0 e o botão.
 
-   As proporções saíram de medição quadro a quadro do exemplo que o cliente
-   passou: card inicial ocupando ~25% da largura e ~44% da altura da tela,
-   fundo NÍTIDO (o véu escuro matava a profundidade — é o fundo que faz o
-   card parecer recortado por cima dele) e título grande, com as metades
-   saindo retas pros lados sem se realinharem no meio do caminho. */
-.palco {
-  --p: 0;
-  /* card no início. A altura sai da largura, não da altura da tela: preso a
-     vh, numa tela larga e baixa o card virava quase quadrado, e no exemplo
-     ele é claramente retrato (3:4). O teto em vh existe só pra não estourar
-     em tela curta. */
-  --w0: clamp(240px, 25vw, 400px);
-  --h0: min(calc(var(--w0) * 1.34), 62vh);
-  /* quanto o título e as notas andam pros lados no percurso inteiro. Quanto
-     maior, mais cedo eles saem da tela: com 200vw o título já sumiu por
-     volta de 40% da rolagem, em vez de acompanhar a abertura até o fim. */
-  --saida: 200vw;
+   ⚠️ HOUVE UM PALCO ANIMADO AQUI, e ele saiu por decisão do usuário. Até
+   27/08/2026 esta seção tinha 200vh de percurso: um card com a foto do salão
+   abria de pequeno até a tela cheia enquanto as duas metades do título
+   deslizavam pros lados. O motivo da saída não foi bug — foi portabilidade:
+   *"essa animação atual não fica boa em todos os sites e depende muito das
+   imagens"*. Ela pedia DUAS fotos que se dessem bem lado a lado (fachada de
+   fundo + salão no card), cada uma com recorte próprio pra celular. Este topo
+   pede UMA foto e serve pra qualquer cliente. Não reintroduzir o palco sem
+   ele pedir.
+
+   A FOTO ENTRA POR CSS, NÃO POR <img>, e isso é de propósito: o degradê fica
+   na MESMA propriedade `background-image`, empilhado por cima da foto, e
+   embaixo de tudo vai um degradê de cor sólida. Se a foto faltar, o hero
+   continua sendo um bloco azul legível com o texto em cima — nunca um
+   retângulo quebrado.
+
+   A FOTO OCUPA A TELA INTEIRA, inclusive por baixo da barra do topo. Daí a
+   dupla `margin-top:calc(-1 * var(--topo-h))` + o mesmo valor somado ao
+   padding-top: a seção sobe pra debaixo da barra e devolve o espaço por
+   dentro, pra o texto não nascer coberto. E `100svh`, não `100vh`: no celular
+   o vh conta a barra de endereço que ainda vai sumir, e os botões nasceriam
+   abaixo da dobra.
+
+   O VÉU NÃO É UMA CORTINA. São três camadas com funções separadas: uma ELIPSE
+   ancorada no canto de baixo à esquerda, que escurece só onde o texto mora;
+   uma faixa rasteira de contraste na base; e um fio escuro no topo, pela logo
+   e pelo menu. O miolo e o alto ficam com a foto limpa — que é onde está o
+   letreiro G&P, a melhor coisa da imagem.
+
+   ⚠️ A ELIPSE AQUI É MAIS FORTE QUE A DA REALCE, e não é exagero: lá o que
+   estava debaixo do texto era parede bege (tom médio); aqui é o interior da
+   loja em VERDE-LIMÃO com máquinas brancas — o ponto mais claro da foto
+   inteira. Com a curva original da Realce (.46 a 46% do raio) o texto branco
+   caía em cima de lima acesa. Se um dia a foto do topo trocar por uma mais
+   escura, esta curva pode voltar a afrouxar.
+
+   O `background-position` vertical é `center 4%` de propósito: com o hero na
+   tela inteira, o corte de `cover` tira altura, e o letreiro da fachada está
+   na parte de CIMA da foto. Ancorar perto do topo mantém o letreiro logo
+   abaixo da barra; `center` puro empurraria ele pra debaixo da logo. Os 4% e
+   não 0% porque a borda de cima da foto é teto preto — dá pra perder alguns
+   pixels dele, não dá pra perder a borda da placa branca. */
+.hero {
   position: relative;
-  height: min(94vh, 760px);
-  background: var(--azul-escuro);
+  display: flex; align-items: flex-end;
+  min-height: 100vh;
+  min-height: 100svh;
+  margin-top: calc(-1 * var(--topo-h));
+  padding: calc(var(--topo-h) + clamp(4rem, 10vw, 6rem)) 0 clamp(2.8rem, 6vw, 4.5rem);
+  background-image:
+    /* 1. o canto do texto — elipse grande ancorada embaixo, à esquerda */
+    radial-gradient(122% 100% at 4% 108%,
+      rgba(16,42,82,.95) 0%, rgba(16,42,82,.88) 24%, rgba(16,42,82,.66) 46%,
+      rgba(16,42,82,.34) 68%, rgba(16,42,82,0) 88%),
+    /* 2. base rasteira, largura toda: assenta o bloco e emenda com o letreiro
+          verde que vem logo abaixo */
+    linear-gradient(0deg, rgba(16,42,82,.66) 0%, rgba(16,42,82,.30) 14%, rgba(16,42,82,0) 34%),
+    /* 3. fio no topo, só pelo contraste da logo branca e do menu. Ele encosta
+          na borda de cima da placa da fachada e apaga um tico dela — é o preço
+          de ter menu legível sobre placa branca, e o corte fica nos 5% que
+          ninguém lê. */
+    linear-gradient(180deg, rgba(10,24,48,.62) 0%, rgba(10,24,48,.40) 6%, rgba(10,24,48,.12) 14%, rgba(10,24,48,0) 26%),
+    url("../img/hero-fundo.jpg"),
+    linear-gradient(160deg, #1a3a6e 0%, #102a52 55%, #0a1830 100%);
+  background-size: cover, cover, cover, cover, cover;
+  background-position: center, center, center, center 4%, center;
+  background-repeat: no-repeat;
   color: var(--branco);
 }
-/* A altura do percurso vem de `html.js`, não de uma classe que o script do
-   fim da seção adiciona. Parece detalhe, mas é o que separa 0 de um CLS feio:
-   marcada por script no <head>, a classe existe antes da primeira pintura e a
-   seção já nasce com a altura final. Marcada lá embaixo, num aparelho lento a
-   página pinta com o hero em 760px e logo depois ele vira 190vh, empurrando
-   tudo que vem abaixo — deslocamento de layout que o PageSpeed cobra. */
-html.js .palco { height: 200vh; }
 
-.palco__trilho { position: relative; height: 100%; overflow: hidden; }
-html.js .palco .palco__trilho { position: sticky; top: 0; height: 100vh; }
-
-/* fundo: fachada da loja, nítida. Só um degradê leve pra firmar o contraste
-   do texto, fechando um pouco conforme o card toma a tela. */
-.palco__fundo {
-  position: absolute; inset: 0; z-index: 0;
-  transform: scale(calc(1.08 * (1 - var(--p)) + 1 * var(--p)));
-  will-change: transform;
-}
-.palco__fundo picture { display: block; width: 100%; height: 100%; }
-.palco__fundo img { width: 100%; height: 100%; object-fit: cover; }
-.palco__fundo::after {
-  content: ""; position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(16,42,82,.20) 0%, rgba(16,42,82,.55) 100%);
-  opacity: calc(.85 * (1 - var(--p)) + 1 * var(--p));
-}
-.palco__bolhas { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
-
-/* o card que abre: centrado por transform, cresce de --w0/--h0 até 100% do
-   trilho. Sem container de layout no meio — assim o 100% é exatamente a tela. */
-.palco__midia {
-  position: absolute; top: 50%; left: 50%; z-index: 2;
-  display: block; overflow: hidden;
-  transform: translate(-50%, -50%);
-  width:  calc(var(--w0) * (1 - var(--p)) + 100% * var(--p));
-  height: calc(var(--h0) * (1 - var(--p)) + 100% * var(--p));
-  border-radius: calc(18px * (1 - var(--p)));
-  box-shadow: 0 26px 70px rgba(0, 0, 0, calc(.55 * (1 - var(--p))));
-  /* `contain` no lugar de `will-change: width, height`: will-change só ajuda em
-     propriedade que o compositor sabe animar sozinho (transform, opacity) —
-     em width/height ele não promove camada nenhuma e ainda reserva memória à
-     toa. Já `contain` avisa que nada fora deste elemento depende do tamanho
-     dele, então o recálculo de cada frame para aqui em vez de subir a árvore.
-     É o que segura a fluidez no celular, onde esse recálculo dói. */
-  contain: layout paint;
-}
-/* O quadro muda de forma no meio do caminho — retrato no card pequeno,
-   paisagem em tela cheia —, então o corte troca de eixo: primeiro come as
-   laterais, depois o topo e a base. Por isso os dois valores importam.
-   65% na horizontal segura a fileira de máquinas dentro do card pequeno (no
-   centro da foto ela ficaria pela metade); 50% na vertical porque em tela
-   cheia o assunto — máquinas e mesinha do espaço kids — está no meio. */
-.palco__midia img {
-  width: 100%; height: 100%; object-fit: cover;
-  object-position: 65% 50%;
-  /* A foto é um plano aberto do salão inteiro. Espremida num card de ~320px
-     as máquinas viram um detalhe distante e o card não se lê. Então o card
-     pequeno mostra um recorte fechado na fileira (zoom 1,5) e o zoom vai
-     abrindo junto com ele, até revelar o salão inteiro em tela cheia — a
-     foto é a mesma, o que muda é o quanto dela cabe. A origem fica no ponto
-     das máquinas, senão o zoom fecha no lugar errado. */
-  transform: scale(calc(1.8 * (1 - var(--p)) + 1 * var(--p)));
-  transform-origin: 66% 34%;
-  will-change: transform;
-}
-/* no celular a foto já vem recortada na fileira de máquinas, então o
-   enquadramento certo é o centro dela mesmo */
-@media (max-width: 700px) {
-  .palco__midia img { object-position: 50% 50%; }
-}
-/* véu sobre o card, só enquanto o título passa por cima dele */
-.palco__midia::after {
-  content: ""; position: absolute; inset: 0;
-  background: rgba(16, 42, 82, .5);
-  opacity: calc(1 - var(--p));
+/* Janela de desktop arrastada pra metade, tablet deitado curto: ali `cover`
+   corta pelas LATERAIS (a foto é 1085x817, então qualquer quadro mais estreito
+   que 1,33:1 come largura) e o letreiro começa a perder as pontas. Reduzir a
+   altura mínima devolve largura visível. */
+@media (min-width: 701px) and (max-aspect-ratio: 5/4) {
+  .hero { min-height: min(92svh, 820px); background-position: center, center, center, center 2%, center; }
 }
 
-/* título: as duas metades nascem empilhadas (lê como um H1 normal de duas
-   linhas) e se afastam só na horizontal, mantendo o desnível entre elas. */
-.palco__titulo {
-  position: absolute; inset: 0; z-index: 3; margin: 0;
-  display: grid; place-items: center;
-  pointer-events: none;
-}
-/* O tamanho pode ser agressivo porque as metades não quebram linha e o trilho
-   tem overflow:hidden — nada disso vaza pro scroll da página. O teto de largura
-   é a metade mais longa ("Lave e seque sua roupa", ~11,4em nesse peso): a 6,8vw
-   ela ocupa ~78vw, então ainda sobra respiro lateral na tela mais estreita em
-   que essa faixa vale. */
-.palco__meia {
-  grid-area: 1 / 1;
-  color: var(--branco); white-space: nowrap;
-  font-size: clamp(2rem, 6.8vw, 5.75rem);
-  font-weight: 900; letter-spacing: -.035em; line-height: 1.05;
-  /* duas sombras: a curta cola a letra na foto e garante contraste mesmo se
-     ela cair sobre um trecho claro; a longa dá o volume. Uma só não fazia as
-     duas coisas — aberta demais pra encostar, fechada demais pra pesar. */
-  text-shadow: 0 2px 10px rgba(16, 42, 82, .75), 0 4px 40px rgba(0, 0, 0, .55);
-  will-change: transform;
+.hero .wrap { width: 100%; }
+.hero h1 {
+  /* 22ch e não menos: com 18ch o h1 caía em TRÊS linhas no desktop, e a terceira
+     empurrava a pílula do endereço pra cima da palavra "LAVANDERIA" da placa —
+     texto sobre texto, e o da placa é o mais bonito dos dois. Em duas linhas o
+     bloco inteiro desce uma linha e a pílula fica abaixo da placa.
+
+     O `white-space: nowrap` no .hero__realce é do mesmo problema: sem ele a
+     quebra caía entre "60" e "minutos", partindo a promessa no meio. */
+  max-width: 22ch; margin: 0;
+  color: var(--branco);
+  font-size: clamp(2.1rem, 5.6vw, 3.5rem);
+  text-shadow: 0 2px 24px rgba(0,0,0,.5), 0 1px 3px rgba(0,0,0,.4);
 }
 /* A promessa inteira é o tempo — é o que faz alguém parar. Ela sai do branco
-   pro verde da marca pra virar a única palavra colorida do quadro. <em> por
-   semântica (ênfase real), com o itálico desligado. */
-.palco__realce { color: var(--verde); font-style: normal; }
-.palco__meia--esq { transform: translate(calc(var(--p) * var(--saida) * -1), -.62em); }
-.palco__meia--dir { transform: translate(calc(var(--p) * var(--saida)),      .62em); }
+   pro verde da marca pra virar a única palavra colorida do quadro, e é o mesmo
+   verde das letras da fachada logo acima. <em> por semântica (ênfase real),
+   com o itálico desligado. */
+.hero__realce { color: var(--verde); font-style: normal; white-space: nowrap; }
 
-/* notas miúdas logo abaixo do card, uma pra cada lado. Viajam junto com a
-   metade de título correspondente e ficam atrás do card (z-index 1), então
-   somem cobertas por ele conforme cresce. */
-.palco__nota {
-  position: absolute; left: 50%; z-index: 1; margin: 0;
-  top: calc(50% + var(--h0) / 2 + 1.2rem);
-  font-size: .92rem; font-weight: 600; color: #e6eefb;
-  white-space: nowrap; text-shadow: 0 2px 14px rgba(0, 0, 0, .6);
-  pointer-events: none;
+.hero__selo {
+  display: inline-flex; align-items: center; gap: .5rem;
+  margin-bottom: 1.1rem; padding: .4rem .9rem; border-radius: 999px;
+  background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28);
+  font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: #e6eefb;
 }
-.palco__nota--esq { transform: translateX(calc(-50% - var(--p) * var(--saida))); }
-.palco__nota--dir {
-  top: calc(50% + var(--h0) / 2 + 3.1rem);
-  font-size: .8rem; color: #b9cdea;
-  transform: translateX(calc(-50% + var(--p) * var(--saida)));
+.hero__selo svg { width: 14px; height: 14px; fill: currentColor; flex: none; }
+@media (max-width: 700px) { .hero__rua { display: none; } }
+
+/* A nota fica ENTRE o h1 e a chamada, e não no rodapé do bloco: 5,0 em 23
+   avaliações é o segundo argumento mais forte da página e não pode disputar
+   atenção com os botões. Logo abaixo do título ele é a segunda coisa lida. */
+.hero__nota {
+  margin: 1.1rem 0 0; font-size: .95rem; font-weight: 700; color: #e6eefb;
+  text-shadow: 0 2px 14px rgba(0,0,0,.55);
+}
+.hero__nota b { color: var(--branco); }
+.hero__nota .estrelas { color: #ffc53d; letter-spacing: .06em; }
+
+.hero__sub {
+  max-width: 46ch; margin: .9rem 0 0;
+  font-size: clamp(1rem, 2.1vw, 1.12rem); color: #dbe6f7;
+  text-shadow: 0 1px 12px rgba(0,0,0,.45);
 }
 
-/* quadro final: entra na reta final, sobre a foto em tela cheia. Os botões
-   moram aqui — no quadro em que a lavanderia ocupa a tela toda. */
-.palco__final {
-  position: absolute; z-index: 4; left: 0; right: 0;
-  bottom: clamp(2.5rem, 9vh, 6rem);
-  text-align: center; padding: 0 1.25rem;
-  opacity: clamp(0, calc((var(--p) - .72) * 4), 1);
-  pointer-events: none;
-}
-.palco--fim .palco__final { pointer-events: auto; }
-/* Véu no rodapé do quadro. No fim da animação o que está atrás desse bloco é o
-   piso geométrico claro do salão — o ponto mais claro da foto inteira. Texto
-   branco ali some, e sombra sozinha não resolve: ela escurece o contorno da
-   letra, não o fundo. O degradê escurece o fundo. Nasce transparente lá em
-   cima pra não cortar a foto com uma faixa visível, e mora no ::before com
-   z-index negativo — dentro do contexto de empilhamento do próprio bloco,
-   então fica atrás do texto e à frente da imagem sem mexer no resto. */
-.palco__final::before {
-  content: ""; position: absolute; z-index: -1;
-  /* A base tem que morrer exatamente no fim do hero, não 50vh abaixo: o
-     degradê distribui a opacidade pela altura do elemento, então uma cauda
-     fora da tela joga toda a parte escura pra fora do quadro e o que sobra
-     em cima do texto é quase transparente. Descontando a mesma distância que
-     afasta o bloco do rodapé, ele termina rente à borda e a rampa inteira
-     acontece dentro do que se vê. */
-  left: 0; right: 0;
-  top: -4rem; bottom: calc(-1 * clamp(2.5rem, 9vh, 6rem));
-  background: linear-gradient(180deg, rgba(16, 42, 82, 0) 0%, rgba(16, 42, 82, .72) 60%);
-  pointer-events: none;
-}
-.palco__final p {
-  margin: 0 0 1.1rem; font-weight: 700; color: var(--branco);
-  text-shadow: 0 2px 10px rgba(16, 42, 82, .8), 0 4px 24px rgba(0, 0, 0, .55);
-}
-.palco__acoes { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; }
+.hero__acoes { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 1.8rem; }
 
-/* Estado parado: só quando o JS não roda (a trava de "reduzir movimento"
-   saiu do script — ver o comentário lá). Em vez do card pequeno, que sem o
-   movimento não significa nada, entrega direto o quadro final: foto em tela
-   cheia, título no meio e os botões embaixo. Hero comum, forte, sem scroll
-   morto. */
-html:not(.js) .palco__midia {
-  width: 100%; height: 100%; border-radius: 0; box-shadow: none;
+/* Dica de rolagem na lateral direita, em pé. Existe porque o hero toma a tela
+   inteira: sem ela, a primeira tela parece uma imagem de abertura e não uma
+   página que continua. Fica só onde há espaço de sobra (>=1000px), do lado
+   escuro da foto, longe do texto. É decorativa: `aria-hidden` no HTML, não
+   carrega informação que falte em outro lugar. */
+.hero__rolar { display: none; }
+@media (min-width: 1000px) {
+  .hero__rolar {
+    display: flex; align-items: center; gap: .9rem;
+    position: absolute; right: clamp(1rem, 2.4vw, 2.2rem); bottom: clamp(2.5rem, 6vw, 4rem);
+    writing-mode: vertical-rl;
+    font-size: .68rem; letter-spacing: .26em; text-transform: uppercase;
+    color: var(--branco); text-shadow: 0 1px 3px rgba(0,0,0,.7), 0 2px 16px rgba(0,0,0,.6);
+  }
+  .hero__rolar::after {
+    content: ""; width: 2px; height: 64px; border-radius: 2px;
+    background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,0));
+    box-shadow: 0 1px 8px rgba(0,0,0,.5);
+  }
 }
-/* aqui o card já nasce em tela cheia, então o zoom do card pequeno — que
-   com --p parado em 0 estaria no máximo — não tem razão de existir */
-html:not(.js) .palco__midia img { transform: none; }
-html:not(.js) .palco__midia::after { opacity: .6; }
-html:not(.js) .palco__nota { display: none; }
-html:not(.js) .palco__final { opacity: 1; pointer-events: auto; }
 
+/* ===================== HERO NO CELULAR =====================
+   ⚠️ ESTE BLOCO TEM QUE FICAR DEPOIS DE TODAS AS REGRAS BASE DO .hero — mesma
+   especificidade, e quem vem depois ganha.
+
+   ============ A FOTO DO CELULAR É UM ARQUIVO PRÓPRIO ============
+   `hero-topo-mobile.jpg`, 800x1430. É a `hero-fundo-mobile.jpg` (800x1340,
+   recorte vertical da fachada) com **90px de preto acrescentados no topo**. O
+   arquivo de origem saiu daqui e foi pra `Fotos e Imagens/palco-aposentado/`,
+   junto com os dois recortes do card que a animação usava — fora do git, mas
+   guardados pra quem precisar refazer a conta.
+
+   Por que os 90px: sem eles o letreiro da fachada começa a 46px do alto numa
+   tela de 390, e a barra do topo tem 72px — a logo branca do site nascia em
+   cima da placa branca da loja. Com os 90px o letreiro cai em 90px e sobra
+   respiro. A emenda é invisível porque o topo da foto original é preto de
+   verdade (amostrado: rgb(0,0,0) a rgb(8,9,13) em toda a largura até y=90),
+   então não há nem gradiente pra denunciar o corte.
+
+   ⚠️⚠️ O `175vw` É A TRAVA QUE PROTEGE O LETREIRO. Com `cover`, quanto mais
+   alto o hero, mais a imagem é ampliada pra cobrir a altura — e mais largura
+   ela perde nas laterais. **Hero alto = letreiro cortado**, e aqui isso é
+   fatal: a placa ocupa a largura toda da foto, não sobra folga nenhuma. O
+   quadro é 800x1430, então 1430/800 = 1,7875: enquanto o hero for mais BAIXO
+   que 178,75% da largura, `cover` corta pela ALTURA (que aqui só come calçada)
+   e a placa nunca perde as pontas. O `175vw` guarda 2% disso.
+   **Trocou a foto ou mudou a altura: refaz a conta e confere com print a 390px.**
+
+   O hero não ocupa a tela inteira no celular de propósito: os ~54px que faltam
+   deixam a faixa verde de letreiro aparecer sem rolagem, o que puxa a pessoa
+   pra dentro da página. Mesma ideia da Realce.
+
+   O VÉU AQUI SOBE DE BAIXO em vez de ser elipse de canto: no celular o texto
+   ocupa a largura toda, então não cabe a elipse do desktop — mas o princípio
+   é o mesmo, escuro só onde há letra, foto limpa no resto.
+
+   ⚠️ A RAMPA SUBIU DEPOIS DO PRIMEIRO PRINT, e não é recaída. A curva herdada
+   da Realce (.17 a 44%) valia 0,25 na altura em que o h1 nasce — e o que está
+   por baixo dele aqui não é parede bege, é o INTERIOR VERDE-LIMÃO da loja. O
+   "60 minutos" do título é verde da marca: verde sobre verde acendido não se
+   lê. A curva de hoje entrega ~0,60 naquela altura, e a lima vira um azulado
+   fosco em que o verde do texto volta a saltar.
+
+   As contas, medidas em print de 390px (hero de 683px): o h1 nasce a 39,5% da
+   altura contada de baixo; a lima do interior começa a 49%; a placa da fachada
+   vive entre 62% e 87%. Por isso a rampa é forte até 43%, cai rápido entre 52%
+   e 68% e morre antes da placa — na borda de baixo dela ela já vale 0,03.
+   **Mexeu no `175vw` ou no tamanho do h1, refaz esta conta com print novo.** */
 @media (max-width: 700px) {
-  .palco { --w0: 68vw; }
-  html.js .palco { height: 190vh; }
-  /* No celular a trava não é estética, é largura: com nowrap, a metade longa
-     precisa caber em 100vw. 7,6vw × ~11,4em ≈ 87vw — encosta, mas não passa.
-     O teto em rem impede que tablet em retrato estoure pelo outro lado. */
-  .palco__meia { font-size: clamp(1.5rem, 7.6vw, 2.9rem); }
-  .palco__nota { font-size: .8rem; }
-  .palco__nota--dir { font-size: .74rem; }
+  .hero {
+    min-height: calc(100vh - 3.4rem);
+    min-height: min(calc(100svh - 3.4rem), 175vw);
+    padding: calc(var(--topo-h) + 1.4rem) 0 clamp(1.6rem, 5vw, 2.2rem);
+    background-image:
+      linear-gradient(0deg,
+        rgba(16,42,82,.95) 0%, rgba(16,42,82,.90) 13%, rgba(16,42,82,.81) 24%,
+        rgba(16,42,82,.68) 34%, rgba(16,42,82,.52) 43%, rgba(16,42,82,.30) 52%,
+        rgba(16,42,82,.12) 60%, rgba(16,42,82,0) 68%),
+      url("../img/hero-topo-mobile.jpg"),
+      linear-gradient(160deg, #1a3a6e 0%, #102a52 55%, #0a1830 100%);
+    background-size: cover, cover, cover;
+    /* `center top`, não `center 4%`: aqui os 90px de preto já fazem o papel do
+       recuo, e ancorar no topo é o que garante que a placa fique no lugar
+       calculado. O que sobra de corte sai da calçada, embaixo do véu. */
+    background-position: center, center top, center;
+  }
+  /* O SELO DE ENDEREÇO SAI NO CELULAR, por dois motivos que se somam:
+     1. ele encosta na linha "LAVANDERIA | SELF SERVICE" da placa — texto sobre
+        texto, e o da placa é o mais bonito dos dois;
+     2. é informação repetida. A faixa de prova social, logo abaixo do letreiro
+        verde, já traz o endereço por escrito, e ainda tem a seção "Contato"
+        com mapa. */
+  .hero__selo { display: none; }
+  .hero h1 { max-width: none; font-size: clamp(1.8rem, 7.6vw, 2.6rem); }
+  .hero__sub { font-size: 1rem; }
+  /* ⚠️ O `.hero ` NA FRENTE É OBRIGATÓRIO. Hoje `.hero__acoes` só existe no
+     hero, mas na Realce a mesma classe foi reusada em três seções e estas
+     regras sem escopo esticaram a coluna do grid delas — com `nowrap`, item de
+     flex não encolhe abaixo do próprio min-content, e o texto das seções saía
+     cortado no celular. Se um dia esse par lado a lado for desejado em outra
+     seção, criar uma classe própria — não tirar o escopo daqui. */
+  .hero .hero__acoes { margin-top: 1.4rem; gap: .5rem; flex-wrap: nowrap; }
+  .hero .hero__acoes .btn {
+    flex: 1 1 0; justify-content: center; white-space: nowrap;
+    padding: .7rem .5rem; font-size: clamp(.78rem, 3.6vw, .9rem);
+  }
 }
 
 .acoes { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.5rem; }

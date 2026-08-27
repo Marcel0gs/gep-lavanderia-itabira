@@ -6,19 +6,21 @@
 <title>Lavanderia Self Service em Itabira/MG | G&amp;P Lavanderia</title>
 <meta name="description" content="Lave e seque sua roupa em até 60 minutos na G&amp;P Lavanderia, self service no Centro de Itabira/MG. Ambiente climatizado, wi-fi grátis e cantinho das crianças. Aberto todos os dias, 05h às 00h.">
 <link rel="canonical" href="https://marcel0gs.github.io/gep-lavanderia-itabira/">
-
 <!-- Marca que o JS está disponível ANTES de qualquer pintura. É por essa classe
-     que o CSS decide a altura do hero: assim a seção já nasce com a altura do
-     percurso, em vez de crescer depois e empurrar a página. Precisa ficar aqui
-     em cima, sem `defer` e sem `async` — a graça é justamente ser síncrono. -->
+     que o CSS decide se a barra do topo nasce transparente (sobre a fachada) ou
+     branca. O padrão sem JS é a barra branca — feia sobre a foto, mas legível;
+     se o padrão fosse transparente, quem entrasse sem script ficaria com logo
+     branca sobre fundo branco. Precisa ficar aqui em cima, sem `defer` e sem
+     `async` — a graça é justamente ser síncrono. -->
 <script>document.documentElement.className += " js";</script>
 
 <!-- A fachada é o maior elemento do primeiro quadro — é ela que o navegador
-     cronometra como LCP. Preload aqui em cima, ANTES da folha de estilo, faz o
-     download começar no primeiro byte do HTML em vez de esperar o CSS baixar e
-     o parser chegar no <picture>. Uma linha por largura, com `media` igual ao
-     do <source> lá embaixo, senão o celular baixa as duas. -->
-<link rel="preload" as="image" href="assets/img/hero-fundo-mobile.jpg" media="(max-width: 700px)" fetchpriority="high">
+     cronometra como LCP. Ela entra por `background-image` no CSS, então o
+     navegador só descobre o arquivo depois de baixar e casar a folha de estilo:
+     o preload aqui em cima antecipa esse download pro primeiro byte do HTML.
+     Uma linha por largura, com `media` igual ao da regra do CSS, senão o
+     celular baixa as duas. -->
+<link rel="preload" as="image" href="assets/img/hero-topo-mobile.jpg" media="(max-width: 700px)" fetchpriority="high">
 <link rel="preload" as="image" href="assets/img/hero-fundo.jpg" media="(min-width: 701px)" fetchpriority="high">
 
 <link rel="stylesheet" href="assets/css/style.css">
@@ -62,7 +64,17 @@
 
 <!-- Ícone da marca: recriado em SVG a partir da identidade visual real
      (máquina de lavar azul-marinho, porta branca) — ainda não temos o
-     arquivo vetorial original do logo, ver [CONFIRMAR] em empresa.md. -->
+     arquivo vetorial original do logo, ver [CONFIRMAR] em empresa.md.
+
+     ⚠️ O ÍCONE SÃO DOIS DESENHOS, não um. Enquanto a barra está transparente
+     sobre a fachada, o azul-marinho do original some (o topo da foto é preto
+     no celular e o letreiro é branco no desktop). `#icone-maquina-branco` é a
+     mesma máquina em traço branco vazado. As duas ficam empilhadas e trocam
+     por opacidade. **Se um dia o logo mudar, refazer os DOIS** — senão a barra
+     troca de marca no meio da rolagem.
+
+     Recolorir o original por CSS não é opção: `<use>` monta uma shadow tree, e
+     regra de fora não alcança os `fill` que estão nos elementos de dentro. -->
 <svg width="0" height="0" style="position:absolute">
   <symbol id="icone-maquina" viewBox="0 0 48 48">
     <rect x="4" y="4" width="40" height="40" rx="6" fill="#1a3a6e"/>
@@ -73,12 +85,27 @@
     <circle cx="24" cy="28" r="11" fill="none" stroke="#fff" stroke-width="2.4"/>
     <path d="M15 28c2.5 3 5 3 9 0s6.5-3 9 0" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
   </symbol>
+  <symbol id="icone-maquina-branco" viewBox="0 0 48 48">
+    <rect x="5.3" y="5.3" width="37.4" height="37.4" rx="5.2" fill="none" stroke="#fff" stroke-width="2.6"/>
+    <circle cx="12" cy="12" r="1.6" fill="#fff"/>
+    <circle cx="17" cy="12" r="1.6" fill="#fff"/>
+    <circle cx="22" cy="12" r="1.6" fill="#fff"/>
+    <rect x="28" y="10.6" width="12" height="2.8" rx="1.4" fill="#fff"/>
+    <circle cx="24" cy="28" r="9.4" fill="none" stroke="#fff" stroke-width="2.4"/>
+    <path d="M16.2 28c2.2 2.6 4.3 2.6 7.8 0s5.6-2.6 7.8 0" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24">
+    <path d="M12 2c-3.9 0-7 3.1-7 7 0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/>
+  </symbol>
 </svg>
 
 <header class="topo">
   <div class="wrap topo__inner">
     <a class="marca" href="./">
-      <svg class="marca__icone" aria-hidden="true"><use href="#icone-maquina"/></svg>
+      <span class="marca__par">
+        <svg class="marca__icone" aria-hidden="true"><use href="#icone-maquina"/></svg>
+        <svg class="marca__icone marca__icone--branco" aria-hidden="true"><use href="#icone-maquina-branco"/></svg>
+      </span>
       <span>
         <span class="marca__texto"><span>G</span><b>&amp;</b><span>P</span></span>
         <span class="marca__sub">Lavanderia Self Service</span>
@@ -98,142 +125,51 @@
 
 <main>
 
-  <!-- ==================== HERO (abre com o scroll) ==================== -->
-  <!-- Animação dirigida pelo scroll: o card central (foto real do salão)
-       começa pequeno sobre a fachada da loja e vai abrindo até ocupar a tela
-       inteira, enquanto as duas metades do título deslizam pra fora. Toda a
-       interpolação sai de UMA variável CSS (--p, de 0 a 1) que o script no
-       fim da seção atualiza a cada frame de scroll.
+  <!-- ==================== HERO ====================
+       Sem percurso, sem card, sem JS: a fachada é fundo de CSS e o texto mora
+       em cima dela, alinhado embaixo e à esquerda. Mesmo desenho da Realce
+       Odontologia, com a foto ocupando a tela inteira.
 
-       Sem JS não existe a classe `js` no <html>: a seção fica com altura
-       normal de hero e o CSS entrega direto o quadro final — foto em tela
-       cheia, título no meio e os botões embaixo. Nada de layout depende de
-       script que rode depois da página pintar. -->
-  <section class="palco">
-    <div class="palco__trilho">
+       ⚠️ AQUI HAVIA UMA ANIMAÇÃO DIRIGIDA PELO SCROLL, e ela saiu em
+       27/08/2026 a pedido do usuário: um card com a foto do salão abria de
+       pequeno até a tela cheia enquanto as metades do título deslizavam pros
+       lados. Motivo da saída, nas palavras dele: *"essa animação atual não
+       fica boa em todos os sites e depende muito das imagens"* — ela exigia
+       duas fotos (fachada + salão), cada uma com recorte próprio pra celular,
+       e só funcionava quando as duas se davam bem lado a lado. O topo estático
+       precisa de UMA foto e vale pra qualquer cliente. Não reintroduzir o
+       palco sem ele pedir.
 
-      <!-- Fachada da loja, nítida e sem véu pesado: no exemplo que serviu de
-           referência o fundo aparece de verdade, é ele que dá profundidade
-           pro card recortado por cima. Versão vertical no celular, senão o
-           corte central come o letreiro inteiro. -->
-      <div class="palco__fundo">
-        <picture>
-          <source media="(max-width: 700px)" srcset="assets/img/hero-fundo-mobile.jpg">
-          <img src="assets/img/hero-fundo.jpg" alt="Fachada iluminada da G&amp;P Lavanderia Self Service, no Centro de Itabira" width="1085" height="817" fetchpriority="high">
-        </picture>
+       ORDEM DO BLOCO, e ela não é casual: selo do endereço (quem chega pela
+       busca quer saber ONDE), a promessa, 5,0 · 23, o que é, botões. A nota
+       vem logo abaixo do h1 porque prova social é o segundo argumento mais
+       forte da página — 23 avaliações e nenhuma abaixo de 5. -->
+  <section class="hero">
+    <div class="wrap">
+      <!-- A rua sai no celular: o endereço inteiro quebra a pílula em duas
+           linhas e ela vira um bloco torto. Bairro + cidade é o que a pessoa
+           precisa pra decidir se é perto; o número ela busca depois, na seção
+           "Contato", que tem mapa e botão de rota. -->
+      <span class="hero__selo">
+        <svg aria-hidden="true"><use href="#i-pin"/></svg>
+        <span class="hero__rua">Rua Irmãos D'Caux, 05 · </span>Centro · Itabira/MG
+      </span>
+      <h1>Lave e seque sua roupa em até <em class="hero__realce">60 minutos</em></h1>
+      <p class="hero__nota"><b>5,0</b> <span class="estrelas" aria-hidden="true">★★★★★</span> em <b>23</b> avaliações no Google</p>
+      <!-- Duas linhas, e não três: no celular cada linha aqui empurra o texto
+           pra cima do letreiro da fachada. Climatizado, wi-fi e cantinho das
+           crianças saem daqui sem perda — estão na faixa logo abaixo e na
+           seção de diferenciais. -->
+      <p class="hero__sub">
+        Self service no Centro de Itabira. Aberto todos os dias, das 05h às 00h.
+      </p>
+      <div class="hero__acoes">
+        <a class="btn" href="https://wa.me/5531990609491?text=Ol%C3%A1%21%20Vim%20pelo%20site%20e%20gostaria%20de%20saber%20mais." target="_blank" rel="noopener">Falar no WhatsApp</a>
+        <a class="btn btn--vazado" href="#contato">Ver localização</a>
       </div>
-
-      <!-- Bolhas subindo: elemento gráfico recorrente da marca. Ficam atrás
-           do card, então somem sozinhas quando ele abre pra tela cheia. -->
-      <div class="palco__bolhas" aria-hidden="true">
-        <div class="bolha-sobe" style="width:14px;height:14px;left:6%;animation-delay:0s"></div>
-        <div class="bolha-sobe" style="width:22px;height:22px;left:16%;animation-delay:.5s;--deriva:-24px"></div>
-        <div class="bolha-sobe" style="width:10px;height:10px;left:29%;animation-delay:1.1s"></div>
-        <div class="bolha-sobe" style="width:30px;height:30px;left:41%;animation-delay:.2s;--deriva:26px"></div>
-        <div class="bolha-sobe" style="width:16px;height:16px;left:58%;animation-delay:1.6s;--deriva:-18px"></div>
-        <div class="bolha-sobe" style="width:24px;height:24px;left:71%;animation-delay:.8s"></div>
-        <div class="bolha-sobe" style="width:12px;height:12px;left:85%;animation-delay:2s;--deriva:20px"></div>
-        <div class="bolha-sobe" style="width:18px;height:18px;left:93%;animation-delay:.35s;--deriva:-16px"></div>
-      </div>
-
-      <!-- O card que abre. No celular entra um recorte próprio da mesma foto,
-           fechado na fileira de máquinas: num quadro de ~9:19,5 o plano
-           aberto perderia quase metade da largura e sobraria bancada. -->
-      <picture class="palco__midia">
-        <source media="(max-width: 700px)" srcset="assets/img/hero-card-mobile.jpg">
-        <!-- Sem fetchpriority: duas imagens "high" no mesmo quadro disputam a
-             banda e atrasam as duas. A fachada (que é o LCP) tem o preload;
-             o card entra logo atrás, em prioridade normal. -->
-        <img src="assets/img/hero-card.jpg" alt="Salão da G&amp;P Lavanderia: fileira de lavadoras e secadoras industriais na parede verde, mesinha do cantinho das crianças e piso geométrico" width="1402" height="1122">
-      </picture>
-
-      <!-- Título por cima do card. As duas metades nascem empilhadas — lendo
-           como um H1 normal de duas linhas — e se afastam só na horizontal,
-           mantendo o desnível de uma linha entre elas. É assim no exemplo:
-           elas não se alinham no meio, cada uma sai reto pro seu lado. -->
-      <h1 class="palco__titulo">
-        <span class="palco__meia palco__meia--esq">Lave e seque sua roupa</span>
-        <span class="palco__meia palco__meia--dir">em até <em class="palco__realce">60 minutos</em></span>
-      </h1>
-
-      <!-- Duas notas miúdas logo abaixo do card, uma pra cada lado. Viajam
-           junto com a metade de título correspondente e vão sendo cobertas
-           pelo card conforme ele cresce. -->
-      <p class="palco__nota palco__nota--esq">Self service no Centro de Itabira</p>
-      <p class="palco__nota palco__nota--dir">Role para entrar ↓</p>
-
-      <!-- Entra na reta final, sobre a foto em tela cheia. É aqui que moram
-           os botões agora: no quadro em que a lavanderia ocupa a tela toda,
-           não espremidos embaixo do card pequeno. -->
-      <div class="palco__final">
-        <p>Aberto todos os dias, das 05h às 00h</p>
-        <div class="palco__acoes">
-          <a class="btn" href="https://wa.me/5531990609491?text=Ol%C3%A1%21%20Vim%20pelo%20site%20e%20gostaria%20de%20saber%20mais." target="_blank" rel="noopener">Falar no WhatsApp</a>
-          <a class="btn btn--vazado" href="#contato">Ver localização</a>
-        </div>
-      </div>
-
     </div>
+    <span class="hero__rolar" aria-hidden="true">Role para conhecer</span>
   </section>
-
-  <script>
-    // Converte a posição do scroll dentro da seção num número de 0 a 1 e joga
-    // na variável --p. Todo o resto (tamanho do card, deslocamento do título,
-    // escurecimento do fundo) é interpolação em CSS a partir dela.
-    (function () {
-      var palco = document.querySelector(".palco");
-      if (!palco) return;
-
-      // Sem trava de "reduzir movimento" aqui, de propósito: essa abertura é
-      // 1:1 com o scroll de quem está lendo — não toca sozinha, não tem
-      // parallax atrasado, para no instante em que a pessoa para. O que de
-      // fato incomoda quem tem sensibilidade a movimento é o que se mexe sem
-      // comando, e isso (as bolhas subindo) continua desligado sob `reduce`
-      // pela regra que está no CSS.
-      //
-      // Peso prático de ter travado antes: no Windows o sinal `reduce` vem de
-      // Efeitos de animação desligado, que muita gente desliga por
-      // desempenho. Travar por causa dele escondia o hero inteiro de quem
-      // nunca pediu nada disso.
-      //
-      // Quem liga o modo animado é a classe `js` no <html>, marcada lá no
-      // <head> — aqui não se mexe em altura nenhuma, senão a página cresce
-      // depois de pintada e o deslocamento de layout volta.
-
-      // As duas medidas do percurso (onde a seção começa e quanto scroll ela
-      // prende) só mudam quando a janela muda de tamanho. Ficam em cache: ler
-      // offsetHeight/getBoundingClientRect a cada frame obriga o navegador a
-      // recalcular o layout na hora, bem depois de já ter escrito --p no frame
-      // anterior — é o vaivém que engasga o scroll no celular. Com o cache
-      // sobra só window.scrollY por frame, que não custa layout nenhum.
-      var topo = 0, curso = 0;
-      function medir() {
-        topo = palco.getBoundingClientRect().top + window.scrollY;
-        curso = palco.offsetHeight - window.innerHeight; // scroll preso
-      }
-
-      var agendado = false, ultimo = -1;
-      function atualizar() {
-        agendado = false;
-        var p = curso > 0 ? Math.min(1, Math.max(0, (window.scrollY - topo) / curso)) : 0;
-        // Descarta frame que não mudaria nada na tela. As pontas (0 e 1) passam
-        // sempre, senão o efeito para em 0,998 e não fecha.
-        if (p === ultimo) return;
-        if (p !== 0 && p !== 1 && Math.abs(p - ultimo) < 0.002) return;
-        ultimo = p;
-        palco.style.setProperty("--p", p.toFixed(4));
-        palco.classList.toggle("palco--fim", p > 0.78);
-      }
-      function agendar() {
-        if (!agendado) { agendado = true; requestAnimationFrame(atualizar); }
-      }
-
-      window.addEventListener("scroll", agendar, { passive: true });
-      window.addEventListener("resize", function () { medir(); agendar(); });
-      medir();
-      atualizar();
-    })();
-  </script>
 
   <!-- ==================== LETREIRO ==================== -->
   <div class="letreiro" aria-hidden="true">
@@ -703,5 +639,30 @@
   <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 0C7.2 0 0 7.2 0 16c0 2.8.7 5.5 2.1 7.9L0 32l8.3-2.2c2.3 1.3 4.9 1.9 7.7 1.9 8.8 0 16-7.2 16-16S24.8 0 16 0zm0 29.1c-2.5 0-4.9-.7-7-1.9l-.5-.3-5 1.3 1.3-4.8-.3-.5c-1.4-2.2-2.1-4.7-2.1-7.3C2.4 8.5 8.5 2.4 16 2.4S29.6 8.5 29.6 16 23.5 29.1 16 29.1zm7.4-9.8c-.4-.2-2.4-1.2-2.8-1.3-.4-.1-.6-.2-.9.2-.3.4-1 1.3-1.2 1.5-.2.2-.4.3-.8.1-.4-.2-1.7-.6-3.3-2-1.2-1.1-2-2.4-2.3-2.8-.2-.4 0-.6.2-.8l.6-.7c.2-.2.2-.4.4-.6.1-.2 0-.5 0-.7l-1.2-2.8c-.3-.7-.6-.6-.9-.6h-.7c-.2 0-.6.1-1 .5-.3.4-1.3 1.3-1.3 3.1s1.3 3.6 1.5 3.9c.2.2 2.6 4 6.3 5.6.9.4 1.6.6 2.1.8.9.3 1.7.2 2.3.2.7-.1 2.2-.9 2.5-1.8.3-.9.3-1.6.2-1.8-.1-.2-.3-.3-.7-.5z"/></svg>
 </a>
 
+
+<script>
+  // Barra do topo: transparente enquanto está sobre a fachada, branca depois
+  // de 24px de rolagem. Só isso — o hero em si não depende de script nenhum.
+  //
+  // O estado transparente vive em `.js .topo` (ver CSS): quem entra sem JS
+  // recebe a barra branca desde o primeiro pixel, que é o único estado
+  // legível sem alguém pra tirá-lo dali.
+  (function () {
+    var topo = document.querySelector(".topo");
+    if (!topo) return;
+    var agendado = false, rolado = null;
+    function aplicar() {
+      agendado = false;
+      var agora = window.scrollY > 24;
+      if (agora === rolado) return;   // descarta frame que não muda nada
+      rolado = agora;
+      topo.classList.toggle("topo--rolado", agora);
+    }
+    window.addEventListener("scroll", function () {
+      if (!agendado) { agendado = true; requestAnimationFrame(aplicar); }
+    }, { passive: true });
+    aplicar();   // recarregar no meio da página já nasce com o estado certo
+  })();
+</script>
 </body>
 </html>
